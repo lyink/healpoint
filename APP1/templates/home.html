@@ -1,0 +1,1131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Font Awesome CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<!-- Custom CSS -->
+<style>
+    /* Existing CSS styles from your template */
+    body {
+        margin-top: 20px;
+        background: #eee;
+    }
+
+    .card::after {
+        display: block;
+        position: absolute;
+        bottom: -10px;
+        left: 20px;
+        width: calc(100% - 40px);
+        height: 35px;
+        background-color: #fff;
+        -webkit-box-shadow: 0 19px 28px 5px rgba(64, 64, 64, 0.09);
+        box-shadow: 0 19px 28px 5px rgba(64, 64, 64, 0.09);
+        content: '';
+        z-index: -1;
+    }
+
+    a.card {
+        text-decoration: none;
+    }
+
+    .card {
+        position: relative;
+        border: 0;
+        border-radius: 0;
+        background-color: #fff;
+        -webkit-box-shadow: 0 12px 20px 1px rgba(64, 64, 64, 0.09);
+        box-shadow: 0 12px 20px 1px rgba(64, 64, 64, 0.09);
+    }
+
+    .card {
+        position: relative;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: .25rem;
+    }
+
+    .box-shadow {
+        -webkit-box-shadow: 0 12px 20px 1px rgba(64, 64, 64, 0.09) !important;
+        box-shadow: 0 12px 20px 1px rgba(64, 64, 64, 0.09) !important;
+    }
+
+    .ml-auto,
+    .mx-auto {
+        margin-left: auto !important;
+    }
+
+    .mr-auto,
+    .mx-auto {
+        margin-right: auto !important;
+    }
+
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+
+    .bg-white {
+        background-color: #fff !important;
+    }
+
+    .d-block {
+        display: block !important;
+    }
+
+    img,
+    figure {
+        max-width: 100%;
+        height: auto;
+        vertical-align: middle;
+    }
+
+    .card-text {
+        padding-top: 12px;
+        color: #8c8c8c;
+    }
+
+    .text-sm {
+        font-size: 12px !important;
+    }
+
+    p,
+    .p {
+        margin: 0 0 16px;
+    }
+
+    .card-title {
+        margin: 0;
+        font-family: "Montserrat", sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+    }
+
+    .pt-1,
+    .py-1 {
+        padding-top: .25rem !important;
+    }
+
+    .head-icon {
+        margin-top: 18px;
+        color: #FF4500;
+    }
+
+    /* Button Styling */
+    .talk-to-doctor-btn {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 40px;
+    }
+
+    .talk-to-doctor-btn .btn {
+        background-color: #FF4500;
+        color: #fff;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 50px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .talk-to-doctor-btn .btn:hover {
+        background-color: #e63900;
+    }
+
+    /* Custom Bootstrap Card CSS */
+    .card-custom {
+        overflow: hidden;
+        min-height: 450px;
+        box-shadow: 0 0 15px rgba(10, 10, 10, 0.3);
+    }
+
+    .card-custom-img {
+        height: 200px;
+        min-height: 200px;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-color: inherit;
+    }
+
+    .card-custom-img::after {
+        position: absolute;
+        content: '';
+        top: 161px;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-top-width: 40px;
+        border-right-width: 0;
+        border-bottom-width: 0;
+        border-left-width: 545px;
+        border-left-width: calc(575px - 5vw);
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: inherit;
+    }
+
+    .card-custom-avatar img {
+        border-radius: 50%;
+        box-shadow: 0 0 15px rgba(10, 10, 10, 0.3);
+        position: absolute;
+        top: 100px;
+        left: 1.25rem;
+        width: 100px;
+        height: 100px;
+    }
+
+    /* Section Background Colors */
+    .section-1 {
+        background-color: #f8f9fa; /* Light gray background for the first section */
+        padding: 40px 0;
+    }
+
+    .section-2 {
+        background-color: #e9ecef; /* Slightly darker gray background for the second section */
+        padding: 40px 0;
+    }
+
+    /* New Postcard Styles */
+    @import url("https://fonts.googleapis.com/css2?family=Baloo+2&display=swap");
+    $main-green: #79dd09 !default;
+    $main-green-rgb-015: rgba(121, 221, 9, 0.1) !default;
+    $main-yellow: #bdbb49 !default;
+    $main-yellow-rgb-015: rgba(189, 187, 73, 0.1) !default;
+    $main-red: #bd150b !default;
+    $main-red-rgb-015: rgba(189, 21, 11, 0.1) !default;
+    $main-blue: #0076bd !default;
+    $main-blue-rgb-015: rgba(0, 118, 189, 0.1) !default;
+
+    body {
+        font-family: "Baloo 2", cursive;
+        font-size: 16px;
+        color: #ffffff;
+        text-rendering: optimizeLegibility;
+        font-weight: initial;
+    }
+
+    .dark {
+        background: #110f16;
+    }
+
+    .light {
+        background: #f3f5f7;
+    }
+
+    a, a:hover {
+        text-decoration: none;
+        transition: color 0.3s ease-in-out;
+    }
+
+    #pageHeaderTitle {
+        margin: 2rem 0;
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 2.5rem;
+    }
+
+    /* Cards */
+    .postcard {
+        flex-wrap: wrap;
+        display: flex;
+        box-shadow: 0 4px 21px -12px rgba(0, 0, 0, 0.66);
+        border-radius: 10px;
+        margin: 0 0 2rem 0;
+        overflow: hidden;
+        position: relative;
+        color: #ffffff;
+
+        &.dark {
+            background-color: #18151f;
+        }
+        &.light {
+            background-color: #e1e5ea;
+        }
+
+        .t-dark {
+            color: #18151f;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        h1, .h1 {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .small {
+            font-size: 80%;
+        }
+
+        .postcard__title {
+            font-size: 1.75rem;
+        }
+
+        .postcard__img {
+            max-height: 180px;
+            width: 100%;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .postcard__img_link {
+            display: contents;
+        }
+
+        .postcard__bar {
+            width: 50px;
+            height: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            background-color: #424242;
+            transition: width 0.2s ease;
+        }
+
+        .postcard__text {
+            padding: 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .postcard__preview-txt {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: justify;
+            height: 100%;
+        }
+
+        .postcard__tagbox {
+            display: flex;
+            flex-flow: row wrap;
+            font-size: 14px;
+            margin: 20px 0 0 0;
+            padding: 0;
+            justify-content: center;
+
+            .tag__item {
+                display: inline-block;
+                background: rgba(83, 83, 83, 0.4);
+                border-radius: 3px;
+                padding: 2.5px 10px;
+                margin: 0 5px 5px 0;
+                cursor: default;
+                user-select: none;
+                transition: background-color 0.3s;
+
+                &:hover {
+                    background: rgba(83, 83, 83, 0.8);
+                }
+            }
+        }
+
+        &:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-image: linear-gradient(-70deg, #424242, transparent 50%);
+            opacity: 1;
+            border-radius: 10px;
+        }
+
+        &:hover .postcard__bar {
+            width: 100px;
+        }
+    }
+
+    @media screen and (min-width: 769px) {
+        .postcard {
+            flex-wrap: inherit;
+
+            .postcard__title {
+                font-size: 2rem;
+            }
+
+            .postcard__tagbox {
+                justify-content: start;
+            }
+
+            .postcard__img {
+                max-width: 300px;
+                max-height: 100%;
+                transition: transform 0.3s ease;
+            }
+
+            .postcard__text {
+                padding: 3rem;
+                width: 100%;
+            }
+
+            .media.postcard__text:before {
+                content: "";
+                position: absolute;
+                display: block;
+                background: #18151f;
+                top: -20%;
+                height: 130%;
+                width: 55px;
+            }
+
+            &:hover .postcard__img {
+                transform: scale(1.1);
+            }
+
+            &:nth-child(2n+1) {
+                flex-direction: row;
+            }
+
+            &:nth-child(2n+0) {
+                flex-direction: row-reverse;
+            }
+
+            &:nth-child(2n+1) .postcard__text::before {
+                left: -12px !important;
+                transform: rotate(4deg);
+            }
+
+            &:nth-child(2n+0) .postcard__text::before {
+                right: -12px !important;
+                transform: rotate(-4deg);
+            }
+        }
+    }
+
+    @media screen and (min-width: 1024px) {
+        .postcard__text {
+            padding: 2rem 3.5rem;
+        }
+
+        .postcard__text:before {
+            content: "";
+            position: absolute;
+            display: block;
+            top: -20%;
+            height: 130%;
+            width: 55px;
+        }
+
+        .postcard.dark {
+            .postcard__text:before {
+                background: #18151f;
+            }
+        }
+        .postcard.light {
+            .postcard__text:before {
+                background: #e1e5ea;
+            }
+        }
+    }
+
+    /* COLORS */
+    .postcard .postcard__tagbox .green.play:hover {
+        background: $main-green;
+        color: black;
+    }
+    .green .postcard__title:hover {
+        color: $main-green;
+    }
+    .green .postcard__bar {
+        background-color: $main-green;
+    }
+    .green::before {
+        background-image: linear-gradient(-30deg, $main-green-rgb-015, transparent 50%);
+    }
+    .green:nth-child(2n)::before {
+        background-image: linear-gradient(30deg, $main-green-rgb-015, transparent 50%);
+    }
+
+    .postcard .postcard__tagbox .blue.play:hover {
+        background: $main-blue;
+    }
+    .blue .postcard__title:hover {
+        color: $main-blue;
+    }
+    .blue .postcard__bar {
+        background-color: $main-blue;
+    }
+    .blue::before {
+        background-image: linear-gradient(-30deg, $main-blue-rgb-015, transparent 50%);
+    }
+    .blue:nth-child(2n)::before {
+        background-image: linear-gradient(30deg, $main-blue-rgb-015, transparent 50%);
+    }
+
+    .postcard .postcard__tagbox .red.play:hover {
+        background: $main-red;
+    }
+    .red .postcard__title:hover {
+        color: $main-red;
+    }
+    .red .postcard__bar {
+        background-color: $main-red;
+    }
+    .red::before {
+        background-image: linear-gradient(-30deg, $main-red-rgb-015, transparent 50%);
+    }
+    .red:nth-child(2n)::before {
+        background-image: linear-gradient(30deg, $main-red-rgb-015, transparent 50%);
+    }
+
+    .postcard .postcard__tagbox .yellow.play:hover {
+        background: $main-yellow;
+        color: black;
+    }
+    .yellow .postcard__title:hover {
+        color: $main-yellow;
+    }
+    .yellow .postcard__bar {
+        background-color: $main-yellow;
+    }
+    .yellow::before {
+        background-image: linear-gradient(-30deg, $main-yellow-rgb-015, transparent 50%);
+    }
+    .yellow:nth-child(2n)::before {
+        background-image: linear-gradient(30deg, $main-yellow-rgb-015, transparent 50%);
+    }
+
+    @media screen and (min-width: 769px) {
+        .green::before {
+            background-image: linear-gradient(-80deg, $main-green-rgb-015, transparent 50%);
+        }
+        .green:nth-child(2n)::before {
+            background-image: linear-gradient(80deg, $main-green-rgb-015, transparent 50%);
+        }
+
+        .blue::before {
+            background-image: linear-gradient(-80deg, $main-blue-rgb-015, transparent 50%);
+        }
+        .blue:nth-child(2n)::before {
+            background-image: linear-gradient(80deg, $main-blue-rgb-015, transparent 50%);
+        }
+
+        .red::before {
+            background-image: linear-gradient(-80deg, $main-red-rgb-015, transparent 50%);
+        }
+        .red:nth-child(2n)::before {
+            background-image: linear-gradient(80deg, $main-red-rgb-015, transparent 50%);
+        }
+
+        .yellow::before {
+            background-image: linear-gradient(-80deg, $main-yellow-rgb-015, transparent 50%);
+        }
+        .yellow:nth-child(2n)::before {
+            background-image: linear-gradient(80deg, $main-yellow-rgb-015, transparent 50%);
+        }
+    }
+</style>
+
+<!-- Section 1: Profile Cards Section -->
+<section class="section-1">
+  <div class="container pt-3 mb-3">
+      <h2 class="h3 block-title text-center">What We Offer<small>24/7 Online Doctors. Instant Access, Anywhere, Anytime.</small></h2>
+      <div class="row pt-5 mt-30">
+          <!-- Card 1: Instant Consultations -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-stethoscope fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Instant Consultations</h3>
+                      <p class="card-text text-sm">Connect with a board-certified physician within minutes. Get medical advice, prescriptions, and treatment plans from the comfort of your home.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+          <!-- Card 2: Virtual Urgent Care -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-ambulance fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Virtual Urgent Care</h3>
+                      <p class="card-text text-sm">Need urgent medical attention? Our doctors are available 24/7 to provide immediate care for non-emergency conditions.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+          <!-- Card 3: Prescription Refills -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-prescription-bottle fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Prescription Refills</h3>
+                      <p class="card-text text-sm">Renew your prescriptions quickly and easily. Our doctors can review your medical history and provide refills without the need for an in-person visit.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+          <!-- Card 4: Mental Health Support -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-brain fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Mental Health Support</h3>
+                      <p class="card-text text-sm">Speak with licensed therapists and psychiatrists online. Get support for anxiety, depression, stress, and other mental health concerns.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+          <!-- Card 5: Pediatric Care -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-baby fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Pediatric Care</h3>
+                      <p class="card-text text-sm">Get expert pediatric care for your child. Our doctors can diagnose and treat common childhood illnesses, provide parenting advice, and more.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+          <!-- Card 6: Chronic Condition Management -->
+          <div class="col-lg-4 col-sm-6 mb-30 pb-5">
+              <a class="card" href="#">
+                  <div class="box-shadow bg-white rounded-circle mx-auto text-center" style="width: 90px; height: 90px; margin-top: -45px;">
+                      <i class="fa fa-heartbeat fa-3x head-icon"></i>
+                  </div>
+                  <div class="card-body text-center">
+                      <h3 class="card-title pt-1">Chronic Condition Management</h3>
+                      <p class="card-text text-sm">Manage chronic conditions like diabetes, hypertension, and asthma with personalized care plans from our experienced doctors.</p>
+                      <span class="text-sm text-uppercase font-weight-bold">Learn More&nbsp;<i class="fe-icon-arrow-right"></i></span>
+                  </div>
+              </a>
+          </div>
+      </div>
+
+      <!-- Talk to Doctor Button 
+      <div class="talk-to-doctor-btn text-center mt-5">
+          <button class="btn btn-primary btn-lg">Talk to a Doctor Now</button>
+      </div>
+      -->
+  </div>
+</section>
+<!-- Section 2: Custom Bootstrap 4 Cards Section -->
+<section class="section-2">
+    <div class="container">
+        <h2 class="h3 block-title text-center">What We Offer<small>24/7 Online Doctors. Instant Access, Anywhere, Anytime.</small></h2>
+
+        <div class="row pt-5 m-auto">
+            <!-- Card 1: Step-by-Step Guide -->
+            <div class="col-md-6 col-lg-4 pb-3">
+                <div class="card card-custom bg-white border-white border-0">
+                    <div class="card-custom-img" style="background-image: url(https://via.placeholder.com/1110x500);"></div>
+                    <div class="card-custom-avatar">
+                        <img class="img-fluid" src="{% static 'img/bulb.gif' %}" alt="Step-by-Step Guide" />
+                    
+                    </div>
+                    <div class="card-body" style="overflow-y: auto">
+                        <h4 class="card-title">How to Use the System</h4>
+                        <p class="card-text">Follow these simple steps to connect with a doctor online:</p>
+                        <ol>
+                            <li><strong>Sign Up/Log In:</strong> Create an account or log in to your existing account.</li>
+                            <li><strong>Describe Your Symptoms:</strong> Fill out a brief form about your health concerns.</li>
+                            <li><strong>Choose a Doctor:</strong> Select a doctor from our list of available specialists.</li>
+                            <li><strong>Start Consultation:</strong> Connect with the doctor via video call or chat.</li>
+                            <li><strong>Get Prescription:</strong> Receive your prescription or follow-up instructions.</li>
+                        </ol>
+                    </div>
+                 
+                </div>
+            </div>
+
+            <!-- Card 2: Benefits of Online Consultation -->
+            <div class="col-md-6 col-lg-4 pb-3">
+                <div class="card card-custom bg-white border-white border-0" style="height: 450px">
+                    <div class="card-custom-img" style="background-image: url(https://via.placeholder.com/1110x500);"></div>
+                    <div class="card-custom-avatar">
+                        <img class="img-fluid" src="{% static 'img/phone.gif' %}" alt="Step-by-Step Guide" />
+
+                    </div>
+                    <div class="card-body" style="overflow-y: auto">
+                        <h4 class="card-title">Why Choose Us?</h4>
+                        <p class="card-text">Here are some benefits of using our online doctor system:</p>
+                        <ul>
+                            <li><strong>Convenience:</strong> Consult with a doctor from the comfort of your home.</li>
+                            <li><strong>Time-Saving:</strong> No need to travel or wait in long queues.</li>
+                            <li><strong>Affordable:</strong> Cost-effective compared to in-person visits.</li>
+                            <li><strong>24/7 Availability:</strong> Access doctors anytime, anywhere.</li>
+                            <li><strong>Privacy:</strong> Secure and confidential consultations.</li>
+                        </ul>
+                    </div>
+                  
+                </div>
+            </div>
+
+            <!-- Card 3: Testimonials -->
+            <div class="col-md-6 col-lg-4 pb-3">
+                <div class="card card-custom bg-white border-white border-0">
+                    <div class="card-custom-img" style="background-image: url(https://via.placeholder.com/1110x500);"></div>
+                    <div class="card-custom-avatar">
+                        <img class="img-fluid" src="{% static 'img/doctor.gif' %}" alt="Step-by-Step Guide" />
+                    </div>
+                    <div class="card-body" style="overflow-y: auto">
+                        <h4 class="card-title">What Our Users Say</h4>
+                        <p class="card-text">Here are some testimonials from our satisfied users:</p>
+                        <blockquote class="blockquote">
+                            <p>"The online consultation was quick and easy. The doctor was very professional and helpful!"</p>
+                            <footer class="blockquote-footer">John Doe</footer>
+                        </blockquote>
+                        <blockquote class="blockquote">
+                            <p>"I saved so much time by using this service. Highly recommended!"</p>
+                            <footer class="blockquote-footer">Jane Smith</footer>
+                        </blockquote>
+                    </div>
+           
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Section 4: Light Postcards Section -->
+<section class="healthpoint-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Left Container - Single Image -->
+            <div class="col-lg-6">
+                <div class="healthpoint-image">
+                    <img src="{% static 'img/doc.jpg' %}" alt="Healthpoint System" class="img-fluid rounded shadow" />
+                </div>
+            </div>
+
+            <!-- Right Container - Feature List -->
+            <div class="col-lg-6">
+                <div class="healthpoint-features">
+                    <h2 class="display-5 mb-4">Your Health, Our Priority</h2>
+                    <p class="lead mb-4">The Healthpoint System provides seamless healthcare solutions tailored to your needs.</p>
+                    <ul class="list-unstyled">
+                        <li class="mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-primary text-white rounded-circle me-3">
+                                    <i class="fas fa-video fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Online Consultations</h5>
+                                    <p class="text-muted mb-0">Connect with certified doctors via video calls.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-success text-white rounded-circle me-3">
+                                    <i class="fas fa-calendar-check fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Easy Appointments</h5>
+                                    <p class="text-muted mb-0">Book appointments with specialists in minutes.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-info text-white rounded-circle me-3">
+                                    <i class="fas fa-file-medical fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">Medical Records</h5>
+                                    <p class="text-muted mb-0">Access and manage your health records securely.</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-box bg-warning text-white rounded-circle me-3">
+                                    <i class="fas fa-prescription fa-2x"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">E-Prescriptions</h5>
+                                    <p class="text-muted mb-0">Get prescriptions delivered to your pharmacy.</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-primary btn-lg w-100">Get Started Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom CSS -->
+<style>
+    .healthpoint-section {
+        padding: 80px 0;
+        background-color: #f8f9fa;
+    }
+    .healthpoint-image img {
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .healthpoint-features h2 {
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .healthpoint-features .lead {
+        color: #6c757d;
+    }
+    .healthpoint-features h5 {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 18px;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+<!-- Custom CSS -->
+<style>
+    .healthpoint-section {
+        padding: 80px 0;
+        background-color: #f8f9fa;
+    }
+    .healthpoint-carousel {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .carousel-caption {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 20px;
+        border-radius: 10px;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+    }
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .healthpoint-features h2 {
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .healthpoint-features .lead {
+        color: #6c757d;
+    }
+    .healthpoint-features h5 {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 12px 24px;
+        font-size: 18px;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+<!-- Section 5: Bootstrap Grid Cards Section -->
+<section class="section-5">
+
+    <div class="container py-5">
+        <!-- Centered Header -->
+        <h2 class="h3 block-title text-center">What We Offer<small>24/7 Online Doctors. Instant Access, Anywhere, Anytime.</small></h2>
+
+        <!-- Cards Grid -->
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <!-- Card 1: Cold and Flu -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/flu.jpg' %}" alt="Cold and Flu" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Cold and Flu</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2: Skin Conditions -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/skin.jpg' %}" alt="Skin Conditions" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Skin Conditions</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3: Allergies -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/allergy.jpg' %}" alt="Allergies" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Allergies</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 4: Mental Health -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/mental.jpg' %}" alt="Mental Health" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Mental Health</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 5: Digestive Issues -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/digestion.jpg' %}" alt="Digestive Issues" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Digestive Issues</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 6: Urinary Tract Infections -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/uti.jpg' %}" alt="Urinary Tract Infections" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Urinary Tract Infections</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 7: Headaches and Migraines -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/headache.jpg' %}" alt="Headaches and Migraines" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Headaches and Migraines</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 8: Respiratory Infections -->
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top img-fluid" src="{% static 'img/pafu.png' %}" alt="Respiratory Infections" style="height: 200px; object-fit: cover;" />
+                    <div class="card-body d-flex flex-column align-items-center text-center">
+                        <h5 class="card-title">Respiratory Infections</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Custom Styles */
+    .section-5 {
+        background-color: #e3f2fd; /* Soft blue background color */
+        padding: 60px 0; /* Added padding for better spacing */
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+<section class="section-6 py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Team</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <!-- Team Member 1 -->
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-img-top">
+                        <img class="img-fluid rounded-circle" src="{% static 'img/kevi.jpg' %}" alt="Kelvin Sauli Godfrey" style="width: 150px; height: 150px; object-fit: cover; margin: 20px auto;" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Kelvin Sauli Godfrey</h5>
+                        <p class="card-text text-muted">Software Developer</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member 2 -->
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-img-top">
+                        <img class="img-fluid rounded-circle" src="{% static 'img/noel.jpg' %}" alt="Noeli Willium Nyelo" style="width: 150px; height: 150px; object-fit: cover; margin: 20px auto;" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Noeli Willium Nyelo</h5>
+                        <p class="card-text text-muted">General Physician</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member 3 -->
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-img-top">
+                        <img class="img-fluid rounded-circle" src="{% static 'img/kevi.jpg' %}" alt="Kelvin Sauli Godfrey" style="width: 150px; height: 150px; object-fit: cover; margin: 20px auto;" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Kelvin Sauli Godfrey</h5>
+                        <p class="card-text text-muted">Lead Designer</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Team Member 4 -->
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm">
+                    <div class="card-img-top">
+                        <img class="img-fluid rounded-circle" src="{% static 'img/noel.jpg' %}" alt="Kelvin Sauli Godfrey" style="width: 150px; height: 150px; object-fit: cover; margin: 20px auto;" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Kelvin Sauli Godfrey</h5>
+                        <p class="card-text text-muted">Marketing Director</p>
+                        <div class="social-links mt-3">
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="btn btn-outline-primary btn-sm mx-1"><i class="fab fa-facebook"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+  <!-- Sponsors Section 
+  <section class="section-sponsors py-5 bg-white">
+    <div class="container">
+      <h2 class="text-center mb-5">Our Sponsors</h2>
+      <div class="row justify-content-center align-items-center">
+        <div class="col-md-3 col-6 text-center mb-4">
+          <img src="{% static 'img/sponsor1.png' %}" alt="Sponsor 1" class="img-fluid" style="max-height: 100px;">
+        </div>
+        <div class="col-md-3 col-6 text-center mb-4">
+          <img src="{% static 'img/sponsor2.png' %}" alt="Sponsor 2" class="img-fluid" style="max-height: 100px;">
+        </div>
+        <div class="col-md-3 col-6 text-center mb-4">
+          <img src="{% static 'img/sponsor3.png' %}" alt="Sponsor 3" class="img-fluid" style="max-height: 100px;">
+        </div>
+        <div class="col-md-3 col-6 text-center mb-4">
+          <img src="{% static 'img/sponsor4.png' %}" alt="Sponsor 4" class="img-fluid" style="max-height: 100px;">
+        </div>
+      </div>
+    </div>
+  </section>
+  -->
+
+  <script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+    s1.async=true;
+    s1.src='https://embed.tawk.to/6794b08b825083258e0af809/1iied38vk';
+    s1.charset='UTF-8';
+    s1.setAttribute('crossorigin','*');
+    s0.parentNode.insertBefore(s1,s0);
+    })();
+    </script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    .section-6 {
+        background-color: #f8f9fa; /* Light gray background */
+        padding: 40px 0;
+    }
+  
+    .section-6 .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        max-width: 300px; /* Adjust the max-width as needed */
+        margin: 0 auto; /* Center the card */
+    }
+  
+    .section-6 .card:hover {
+        transform: translateY(-10px);
+    }
+  
+    .section-6 .social-links .btn {
+        margin: 0 5px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+  
+    .section-6 .social-links .btn i {
+        font-size: 18px;
+    }
+  
+    .section-sponsors {
+        background-color: #ffffff; /* White background */
+        padding: 40px 0;
+    }
+  
+    .section-sponsors img {
+        transition: transform 0.3s ease;
+    }
+  
+    .section-sponsors img:hover {
+        transform: scale(1.1);
+    }
+  </style>
+  
+  {% endblock %}

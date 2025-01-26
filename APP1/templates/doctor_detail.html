@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Import Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<section class="healthpoint-section">
+    <div class="container">
+        <!-- Doctor Details -->
+        <div class="doctor-details">
+            <div class="doctor-image-container">
+                {% if doctor.profile_picture %}
+                <img src="{{ doctor.profile_picture.url }}" class="doctor-image" alt="{{ doctor.first_name }}'s Profile Picture">
+                {% else %}
+                <img src="{% static 'images/default_doctor.jpg' %}" class="doctor-image" alt="Default Profile Picture">
+                {% endif %}
+            </div>
+            <div class="doctor-info">
+                <h1 class="doctor-name">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h1>
+                <p class="doctor-specialty">{{ doctor.specialization }}</p>
+                <p class="doctor-bio">{{ doctor.bio }}</p>
+                <ul class="doctor-details-list">
+                    <li><strong>Date of Birth:</strong> {{ doctor.date_of_birth }}</li>
+                    <li><strong>Date Joined:</strong> {{ doctor.date_joined }}</li>
+                    <li><strong>Contact Number:</strong> {{ doctor.contact_number }}</li>
+                    <li><strong>Email:</strong> {{ doctor.email }}</li>
+                </ul>
+                <button class="btn btn-primary">Book Appointment</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Apply Poppins font to the entire section */
+    .healthpoint-section {
+        padding: 40px 0; /* Reduced padding for mobile */
+        background-color: #f9f9f9;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .doctor-details {
+        display: flex;
+        flex-direction: column; /* Stack items vertically on mobile */
+        align-items: center; /* Center items horizontally */
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+
+    .doctor-image-container {
+        width: 100%; /* Full width on mobile */
+        max-width: 400px; /* Limit maximum width for better control */
+        aspect-ratio: 1 / 1; /* Ensure the container is square */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        margin-bottom: 20px; /* Space between image and info */
+        overflow: hidden; /* Ensure the image doesn't overflow */
+    }
+
+    .doctor-image {
+        width: 100%; /* Full width of the container */
+        height: 100%; /* Full height of the container */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+        border-radius: 5px; /* Slightly rounded corners for the image */
+    }
+
+    .doctor-info {
+        width: 100%; /* Full width on mobile */
+        padding-left: 0; /* Remove left padding */
+        text-align: center; /* Center text on mobile */
+    }
+
+    .doctor-name {
+        font-size: 1.8rem; /* Slightly smaller font size for mobile */
+        color: #333;
+        margin-bottom: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+
+    .doctor-specialty {
+        font-size: 1.3rem; /* Slightly smaller font size for mobile */
+        color: #007bff;
+        margin-bottom: 20px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+    }
+
+    .doctor-bio {
+        font-size: 1rem; /* Slightly smaller font size for mobile */
+        color: #555;
+        margin-bottom: 20px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+    }
+
+    .doctor-details-list {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+
+    .doctor-details-list li {
+        font-size: 0.9rem; /* Slightly smaller font size for mobile */
+        color: #555;
+        margin-bottom: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: #fff;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    /* Media Query for tablets and larger screens */
+    @media (min-width: 768px) {
+        .healthpoint-section {
+            padding: 60px 0; /* Restore padding for larger screens */
+        }
+
+        .doctor-details {
+            flex-direction: row; /* Revert to horizontal layout */
+            align-items: flex-start; /* Align items to the top */
+        }
+
+        .doctor-image-container {
+            flex: 1;
+            max-width: 300px; /* Limit width for tablets and desktops */
+            height: auto; /* Allow height to adjust */
+            aspect-ratio: unset; /* Remove fixed aspect ratio */
+            margin-right: 20px; /* Restore space between image and info */
+            margin-bottom: 0; /* Remove bottom margin */
+        }
+
+        .doctor-info {
+            flex: 2;
+            padding-left: 20px; /* Restore left padding */
+            text-align: left; /* Align text to the left */
+        }
+
+        .doctor-name {
+            font-size: 2rem; /* Restore font size for larger screens */
+        }
+
+        .doctor-specialty {
+            font-size: 1.5rem; /* Restore font size for larger screens */
+        }
+
+        .doctor-bio {
+            font-size: 1.1rem; /* Restore font size for larger screens */
+        }
+
+        .doctor-details-list li {
+            font-size: 1rem; /* Restore font size for larger screens */
+        }
+    }
+</style>
+{% endblock %}]
