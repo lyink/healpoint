@@ -1,0 +1,311 @@
+{%  load static %}
+
+<link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
+<script src="{% static 'js/mdb.min.js' %}"></script>
+<link rel="icon" type="image/png" href="{% static 'img/house-icon.png' %}">
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #3454D1;">
+  <!-- Container wrapper -->
+  <div class="container-fluid">
+    <!-- Brand/Logo -->
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+      <i class="fas fa-home me-2"></i>RentalHub
+    </a>
+
+    <!-- Toggle button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-mdb-toggle="collapse"
+      data-mdb-target="#navbarLeftAlignExample"
+      aria-controls="navbarLeftAlignExample"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Collapsible wrapper -->
+    <div class="collapse navbar-collapse" id="navbarLeftAlignExample">
+      <!-- Left links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active text-white hover-underline" aria-current="page" href="{% url 'home' %}">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white hover-underline" href="#">Properties</a>
+        </li>
+
+
+      </ul>
+      <!-- Left links -->
+
+      <!-- Right-aligned elements -->
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- Landlord Button -->
+        <li class="nav-item me-2">
+          <a class="btn btn-outline-light btn-sm" href="#">
+            <i class="fas fa-building me-2"></i>Landlord
+          </a>
+        </li>
+        
+        <!-- Agent Button -->
+        <li class="nav-item me-3">
+          <a class="btn btn-light btn-sm text-primary" href="#">
+            <i class="fas fa-user-tie me-2"></i>Agent
+          </a>
+        </li>
+        
+        <!-- Contact Us Button -->
+
+
+        <!-- Account dropdown -->
+        <li class="nav-item dropdown">
+          <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+        </a>
+          <!-- Dropdown menu -->
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="fas fa-key me-2"></i>Password
+              </a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="fas fa-user me-2"></i>Profile
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- Collapsible wrapper -->
+  </div>
+  <!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
+
+<!-- Custom CSS for hover effects -->
+<style>
+  .hover-underline {
+    position: relative;
+    text-decoration: none;
+  }
+  .hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    bottom: -2px;
+    left: 0;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  .hover-underline:hover::after {
+    transform: scaleX(1);
+  }
+  .dropdown-item {
+    transition: background-color 0.3s ease;
+  }
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+  .btn-outline-light {
+    border: 1px solid white;
+    color: white;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .btn-outline-light:hover {
+    background-color: white;
+    color: #3454D1;
+  }
+</style>
+
+</header>
+<!-- Background image -->
+<div
+  class="p-5 text-center bg-image d-flex justify-content-center align-items-center"
+  style="
+    background-image: url('{%  static "img/unyama.jpg" %}');
+    height: 700px;
+    background-size: cover;
+    background-position: center;
+  "
+>
+  <div class="mask" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="d-flex flex-column justify-content-center align-items-center h-100">
+      <div class="text-white">
+        <h1 class="mb-3 display-4 font-weight-bold">RentalHub</h1>
+        <p class="lead mb-4">Find Your Dream Home Today</p>
+        <div class="d-flex justify-content-center">
+          <a class="btn btn-primary btn-lg rounded-pill px-5 py-3 me-3" href="#" role="button">Search Properties</a>
+          <a class="btn btn-outline-light btn-lg rounded-pill px-5 py-3" href="#" role="button">
+            <i class="fas fa-building me-2"></i>I'm a Landlord
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Background image -->
+
+<body style="background-color: #E9ECEF;"> 
+  
+{% block content%}
+
+{% endblock %}
+</body>
+ 
+<!-- Footer -->
+<footer class="text-center text-lg-start" style="background-color: #f8f9fa;">
+  <!-- Section: Social media -->
+  <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+    <!-- Left -->
+    <div class="me-5 d-none d-lg-block">
+      <span class="text-dark"></span>
+    </div>
+    <!-- Left -->
+
+    <!-- Right -->
+    <div>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-facebook-f"></i>
+      </a>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-google"></i>
+      </a>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-instagram"></i>
+      </a>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-linkedin"></i>
+      </a>
+      <a href="#" class="me-4 text-dark text-decoration-none hover-scale">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <!-- Right -->
+  </section>
+  <!-- Section: Social media -->
+
+  <!-- Section: Links -->
+  <section class="p-5">
+    <div class="container text-center text-md-start">
+      <!-- Grid row -->
+      <div class="row mt-3">
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+          <!-- Content -->
+          <h6 class="text-uppercase fw-bold mb-4 text-primary">
+            <i class="fas fa-building me-3 text-primary"></i>RentalHub
+          </h6>
+          <p class="text-dark">
+            Your perfect home is our priority. We provide exceptional rental properties and services to help you find your ideal living space.
+          </p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+          <!-- Links -->
+          <h6 class="text-uppercase fw-bold mb-4 text-primary">
+            Services
+          </h6>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Property Listings</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Virtual Tours</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Appointments</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Maintenance Requests</a>
+          </p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+          <!-- Links -->
+          <h6 class="text-uppercase fw-bold mb-4 text-primary">
+            For Landlords
+          </h6>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">List Property</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Landlord Dashboard</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Tenant Screening</a>
+          </p>
+          <p>
+            <a href="#!" class="text-dark text-decoration-none hover-underline">Pricing</a>
+          </p>
+        </div>
+        <!-- Grid column -->
+
+        <!-- Grid column -->
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+          <!-- Links -->
+          <h6 class="text-uppercase fw-bold mb-4 text-primary">Contact</h6>
+          <p class="text-dark"><i class="fas fa-home me-3 text-primary"></i> Kampala, UG</p>
+          <p class="text-dark">
+            <i class="fas fa-envelope me-3 text-primary"></i>
+            info@rentalhub.com
+          </p>
+          <p class="text-dark"><i class="fas fa-phone me-3 text-primary"></i> +256 712 345 678</p>
+          <p class="text-dark"><i class="fas fa-print me-3 text-primary"></i> +256 712 345 679</p>
+        </div>
+        <!-- Grid column -->
+      </div>
+      <!-- Grid row -->
+    </div>
+  </section>
+  <!-- Section: Links -->
+
+  <!-- Copyright -->
+  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+    © 2025 Copyright:
+    <a class="text-dark fw-bold text-decoration-none" href="https://rentalhub.com">RentalHub</a>
+  </div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+<!-- Custom CSS for hover effects -->
+<style>
+  .hover-scale {
+    transition: transform 0.3s ease;
+  }
+  .hover-scale:hover {
+    transform: scale(1.2);
+  }
+  .hover-underline {
+    position: relative;
+    text-decoration: none;
+  }
+  .hover-underline::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: #3454D1;
+    bottom: -2px;
+    left: 0;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  .hover-underline:hover::after {
+    transform: scaleX(1);
+  }
+</style>

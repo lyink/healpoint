@@ -1,0 +1,1133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load property_tags %}
+
+{% block title %}Browse Properties | Find Your Rental Home{% endblock %}
+
+{% block content %}
+
+<!-- Google Fonts and Font Awesome are assumed to be included in base.html -->
+
+<!-- Custom CSS for Property Listing -->
+<style>
+    :root {
+        --primary: #2c3e50;
+        --secondary: #34495e;
+        --accent: #3498db;
+        --accent-light: #5dade2;
+        --accent-dark: #2980b9;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --info: #3498db;
+        --light: #f5f7fa;
+        --dark: #343a40;
+        --body-bg: #f5f7fa;
+        --card-bg: #ffffff;
+        --text-primary: #2c3e50;
+        --text-secondary: #7f8c8d;
+        --text-light: #bdc3c7;
+        --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --border-radius: 10px;
+        --border-radius-lg: 15px;
+        --border-radius-sm: 6px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--primary), var(--accent-dark));
+        padding: 60px 0;
+        color: white;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('{% static "img/pattern.png" %}');
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .page-header-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .page-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 0;
+    }
+    
+    .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .breadcrumb-item.active {
+        color: white;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Filter Section */
+    .filter-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 30px;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .filter-header {
+        background-color: var(--primary);
+        color: white;
+        padding: 15px 20px;
+        border-bottom: none;
+    }
+    
+    .filter-title {
+        font-weight: 600;
+        margin-bottom: 0;
+        font-size: 1.1rem;
+    }
+    
+    .filter-body {
+        padding: 20px;
+    }
+    
+    .filter-section {
+        margin-bottom: 25px;
+    }
+    
+    .filter-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .filter-section-title {
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 1rem;
+        color: var(--text-primary);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding-bottom: 10px;
+    }
+    
+    .filter-options {
+        margin-bottom: 20px;
+    }
+    
+    .custom-control-label {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+    }
+    
+    .custom-control-label::before,
+    .custom-control-label::after {
+        width: 18px;
+        height: 18px;
+        top: 0.2rem;
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: var(--accent);
+        border-color: var(--accent);
+    }
+    
+    .filter-badge {
+        float: right;
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--accent);
+        font-size: 0.8rem;
+        padding: 3px 8px;
+        border-radius: 30px;
+        font-weight: 600;
+    }
+    
+    .form-select, .form-control {
+        padding: 10px 15px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid rgba(0,0,0,0.1);
+        font-size: 0.95rem;
+    }
+    
+    .form-select:focus, .form-control:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .btn-filter {
+        width: 100%;
+        padding: 12px;
+        font-weight: 600;
+        background-color: var(--accent);
+        border: none;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition);
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-filter:hover {
+        background-color: var(--accent-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    /* Property Cards */
+    .property-card {
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: var(--transition);
+        background-color: var(--card-bg);
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        position: relative;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-7px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .property-image-container {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+    }
+    
+    .property-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .property-card:hover .property-image {
+        transform: scale(1.05);
+    }
+    
+    .property-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 2;
+    }
+    
+    .property-type-badge {
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        z-index: 2;
+    }
+    
+    .badge {
+        padding: 7px 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+    
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-title {
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
+    
+    .property-location {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .property-location i {
+        margin-right: 8px;
+        color: var(--accent);
+    }
+    
+    .property-features {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .property-feature {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .property-feature i {
+        color: var(--accent);
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+    }
+    
+    .property-price {
+        font-weight: 700;
+        color: var(--success);
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .property-price-caption {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+    }
+    
+    .card-actions {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .btn-primary {
+        background-color: var(--accent);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        border-radius: 50px;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--accent-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-outline-primary {
+        color: var(--accent);
+        border-color: var(--accent);
+        border-radius: 50px;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--accent);
+        color: white;
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+    }
+    
+    .favorite-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(255,255,255,0.9);
+        color: var(--text-secondary);
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 2;
+        border: none;
+        transition: var(--transition);
+        cursor: pointer;
+        opacity: 0.8;
+    }
+    
+    .property-card:hover .favorite-btn {
+        opacity: 1;
+    }
+    
+    .favorite-btn:hover, .favorite-btn.active {
+        background-color: var(--danger);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .compare-checkbox {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        z-index: 2;
+    }
+    
+    .compare-checkbox .custom-control-label {
+        color: white;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    /* Pagination */
+    .pagination {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        justify-content: center;
+    }
+    
+    .page-link {
+        color: var(--accent);
+        border-radius: 50%;
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background-color: white;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+    }
+    
+    .page-link:hover {
+        z-index: 2;
+        color: white;
+        background-color: var(--accent-light);
+        border-color: var(--accent-light);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .page-item.active .page-link {
+        z-index: 3;
+        color: #fff;
+        background-color: var(--accent);
+        border-color: var(--accent);
+    }
+    
+    .page-item.disabled .page-link {
+        color: var(--text-light);
+        background-color: #f8f9fa;
+        border-color: #f8f9fa;
+    }
+    
+    /* Sort and View Options */
+    .listing-options {
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 15px 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .results-count {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .results-count strong {
+        color: var(--text-primary);
+    }
+    
+    .sort-options {
+        display: flex;
+        align-items: center;
+    }
+    
+    .sort-label {
+        margin-right: 10px;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+    
+    .view-options {
+        display: flex;
+        align-items: center;
+    }
+    
+    .view-option {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius-sm);
+        background-color: #f8f9fa;
+        color: var(--text-secondary);
+        margin-left: 10px;
+        transition: var(--transition);
+        cursor: pointer;
+        border: none;
+    }
+    
+    .view-option:hover, .view-option.active {
+        background-color: var(--accent);
+        color: white;
+    }
+    
+    /* No Results */
+    .no-results {
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 40px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .no-results-icon {
+        font-size: 4rem;
+        color: var(--text-light);
+        margin-bottom: 20px;
+    }
+    
+    .no-results-title {
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+    
+    .no-results-text {
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Active Filters */
+    .active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        background-color: rgba(52, 152, 219, 0.1);
+        color: var(--accent);
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        transition: var(--transition);
+    }
+    
+    .filter-pill:hover {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+    
+    .filter-pill .close {
+        font-size: 0.85rem;
+        margin-left: 8px;
+        color: var(--accent);
+    }
+    
+    .clear-all-filters {
+        color: var(--danger);
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 15px;
+        transition: var(--transition);
+    }
+    
+    .clear-all-filters:hover {
+        color: var(--danger);
+        text-decoration: underline;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991px) {
+        .property-image-container {
+            height: 220px;
+        }
+        
+        .listing-options {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .sort-options {
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .page-header {
+            padding: 40px 0;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .property-image-container {
+            height: 200px;
+        }
+        
+        .property-feature {
+            font-size: 0.8rem;
+        }
+        
+        .property-feature i {
+            font-size: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+        }
+        
+        .property-price {
+            font-size: 1.2rem;
+        }
+        
+        .page-header {
+            padding: 30px 0;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+    
+    /* Range Slider Styles */
+    .price-slider-container {
+        padding: 20px 10px 25px;
+    }
+    
+    .price-values {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    /* Animation for property cards */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .property-card {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    .property-card:nth-child(1) { animation-delay: 0.1s; }
+    .property-card:nth-child(2) { animation-delay: 0.2s; }
+    .property-card:nth-child(3) { animation-delay: 0.3s; }
+    .property-card:nth-child(4) { animation-delay: 0.4s; }
+    .property-card:nth-child(5) { animation-delay: 0.5s; }
+    .property-card:nth-child(6) { animation-delay: 0.6s; }
+    .property-card:nth-child(7) { animation-delay: 0.7s; }
+    .property-card:nth-child(8) { animation-delay: 0.8s; }
+    .property-card:nth-child(9) { animation-delay: 0.9s; }
+</style>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="page-header-content">
+            <h1 class="page-title">Browse Properties</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Properties</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="properties-list">
+    <div class="container">
+        <div class="row">
+            <!-- Sidebar / Filters -->
+            <div class="col-lg-3 mb-4">
+                <!-- Filter Card -->
+                <div class="filter-card mb-4">
+                    <div class="filter-header">
+                        <h5 class="filter-title">
+                            <i class="fas fa-filter me-2"></i> Filter Properties
+                        </h5>
+                    </div>
+                    <div class="filter-body">
+                        <form action="{% url 'properties_list_out' %}" method="get">
+                            <!-- Location Filter -->
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">Location</h6>
+                                <div class="mb-3">
+                                    <select name="location" id="location" class="form-select">
+                                        <option value="">All Locations</option>
+                                        {% for region in regions %}
+                                            <option value="{{ region.rname }}" {% if selected_location == region.rname %}selected{% endif %}>{{ region.rname }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Property Type Filter -->
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">Property Type</h6>
+                                <div class="filter-options">
+                                    {% for type in property_types %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="property_type" 
+                                               id="type{{ type.id }}" value="{{ type.id }}"
+                                               {% if selected_property_type == type.id|stringformat:"i" %}checked{% endif %}>
+                                        <label class="form-check-label d-flex justify-content-between w-100" for="type{{ type.id }}">
+                                            {{ type.name }}
+                                            <span class="filter-badge">{{ property_type_counts|get_item:type.id }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Price Range Filter -->
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">Price Range</h6>
+                                <div class="filter-options">
+                                    {% for range in price_ranges %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="price_range" 
+                                               id="price{{ range.value }}" value="{{ range.value }}"
+                                               {% if selected_price_range == range.value %}checked{% endif %}>
+                                        <label class="form-check-label d-flex justify-content-between w-100" for="price{{ range.value }}">
+                                            {{ range.label }}
+                                            <span class="filter-badge">{{ range.count }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Bedrooms Filter -->
+                            <div class="filter-section">
+                                <h6 class="filter-section-title">Bedrooms</h6>
+                                <div class="filter-options">
+                                    {% for bedroom, count in bedroom_counts.items %}
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="bedrooms" 
+                                               id="bedroom{{ bedroom }}" value="{{ bedroom }}"
+                                               {% if selected_bedrooms == bedroom|stringformat:"i" %}checked{% endif %}>
+                                        <label class="form-check-label d-flex justify-content-between w-100" for="bedroom{{ bedroom }}">
+                                            {{ bedroom }} {{ bedroom|pluralize:"Bedroom,Bedrooms" }}
+                                            <span class="filter-badge">{{ count }}</span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Filter Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-filter">
+                                    <i class="fas fa-search me-2"></i> Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Quick Contact Card -->
+                <div class="filter-card">
+                    <div class="filter-header bg-success">
+                        <h5 class="filter-title">
+                            <i class="fas fa-headset me-2"></i> Need Help?
+                        </h5>
+                    </div>
+                    <div class="filter-body text-center">
+                        <i class="fas fa-phone-alt fa-3x text-success mb-3"></i>
+                        <h6 class="mb-3">Contact our property experts</h6>
+                        <p class="text-muted mb-3">Our team is here to help you find the perfect property</p>
+                        <a href="tel:+1234567890" class="btn btn-success btn-sm w-100 mb-2">
+                            <i class="fas fa-phone-alt me-2"></i> Call Us
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm w-100">
+                            <i class="fas fa-envelope me-2"></i> Email Us
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Sort and View Options -->
+                <div class="listing-options">
+                    <div class="results-count">
+                        Showing <strong>{{ page_obj.start_index }}</strong> - <strong>{{ page_obj.end_index }}</strong> of <strong>{{ paginator.count }}</strong> properties
+                    </div>
+                    
+                    <div class="sort-options">
+                        <span class="sort-label">Sort by:</span>
+                        <select class="form-select form-select-sm" id="sort-options">
+                            <option value="newest">Newest First</option>
+                            <option value="price-asc">Price (Low to High)</option>
+                            <option value="price-desc">Price (High to Low)</option>
+                            <option value="bedrooms">Bedrooms</option>
+                        </select>
+                        
+                        <div class="view-options ms-3">
+                            <button type="button" class="view-option active" data-view="grid">
+                                <i class="fas fa-th"></i>
+                            </button>
+                            <button type="button" class="view-option" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Filters (if any) -->
+                {% if selected_location or selected_property_type or selected_price_range or selected_bedrooms %}
+                <div class="active-filters mb-4">
+                    {% if selected_location %}
+                    <div class="filter-pill">
+                        Location: {{ selected_location }}
+                        <a href="?{% if selected_property_type %}property_type={{ selected_property_type }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}" class="close ms-2">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if selected_property_type %}
+                    <div class="filter-pill">
+                        Property Type: {% for type in property_types %}{% if type.id|stringformat:"i" == selected_property_type %}{{ type.name }}{% endif %}{% endfor %}
+                        <a href="?{% if selected_location %}location={{ selected_location }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}" class="close ms-2">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if selected_price_range %}
+                    <div class="filter-pill">
+                        Price: {% for range in price_ranges %}{% if range.value == selected_price_range %}{{ range.label }}{% endif %}{% endfor %}
+                        <a href="?{% if selected_location %}location={{ selected_location }}{% endif %}{% if selected_property_type %}&property_type={{ selected_property_type }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}" class="close ms-2">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if selected_bedrooms %}
+                    <div class="filter-pill">
+                        Bedrooms: {{ selected_bedrooms }}
+                        <a href="?{% if selected_location %}location={{ selected_location }}{% endif %}{% if selected_property_type %}&property_type={{ selected_property_type }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}" class="close ms-2">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'properties_list_out' %}" class="clear-all-filters">Clear All</a>
+                </div>
+                {% endif %}
+                
+                <!-- Property Grid -->
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="property-grid">
+                    {% for property in properties %}
+                    <div class="col">
+                        <div class="property-card">
+                            <!-- Favorite Button -->
+                            <button type="button" class="favorite-btn" title="Add to Favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            
+                            <!-- Property Image -->
+                            <div class="property-image-container">
+                                {% with primary_image=property.get_primary_image %}
+                                {% if primary_image %}
+                                <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:property.name }}" class="property-image">
+                                {% else %}
+                                <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                    <i class="fas fa-home fa-3x text-muted"></i>
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                                
+                                <!-- Property Badge -->
+                                <div class="property-badge">
+                                    <span class="badge bg-success">Available</span>
+                                </div>
+                                
+                                <!-- Property Type Badge -->
+                                <div class="property-type-badge">
+                                    <span class="badge bg-primary">{{ property.property_type.name }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Property Details -->
+                            <div class="card-body">
+                                <h5 class="card-title">{{ property.name }}</h5>
+                                
+                                <div class="property-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ property.address }}, {{ property.city }}</span>
+                                </div>
+                                
+                                <div class="property-features">
+                                    <div class="property-feature">
+                                        <i class="fas fa-bed"></i>
+                                        <span>{{ property.number_of_rooms }} Beds</span>
+                                    </div>
+                                    <div class="property-feature">
+                                        <i class="fas fa-bath"></i>
+                                        <span>{{ property.bathrooms|default:"--" }} Baths</span>
+                                    </div>
+                                    <div class="property-feature">
+                                        <i class="fas fa-vector-square"></i>
+                                        <span>{{ property.square_feet|default:"--" }} sq ft</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="property-price">
+                                    ${{ property.monthly_rent|floatformat:0 }}
+                                    <span class="property-price-caption">/month</span>
+                                </div>
+                                
+                                <div class="card-actions">
+                                    <a href="{% url 'property_detail_home' property.id %}" class="btn btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="no-results">
+                            <i class="fas fa-search no-results-icon"></i>
+                            <h3 class="no-results-title">No Properties Found</h3>
+                            <p class="no-results-text">We couldn't find any properties matching your search criteria. Try adjusting your filters or browse all available properties.</p>
+                            <a href="{% url 'properties_list_out' %}" class="btn btn-primary px-4">View All Properties</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- List View (Hidden by Default) -->
+                <div class="property-list d-none" id="property-list">
+                    {% for property in properties %}
+                    <div class="property-card mb-4">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <div class="property-image-container h-100">
+                                    {% with primary_image=property.get_primary_image %}
+                                    {% if primary_image %}
+                                    <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:property.name }}" class="property-image">
+                                    {% else %}
+                                    <div class="d-flex align-items-center justify-content-center h-100 bg-light">
+                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                    
+                                    <!-- Property Badge -->
+                                    <div class="property-badge">
+                                        <span class="badge bg-success">Available</span>
+                                    </div>
+                                    
+                                    <!-- Favorite Button -->
+                                    <button type="button" class="favorite-btn" title="Add to Favorites">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body h-100 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">{{ property.name }}</h5>
+                                        <span class="badge bg-primary">{{ property.property_type.name }}</span>
+                                    </div>
+                                    
+                                    <div class="property-location mb-3">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{ property.address }}, {{ property.city }}</span>
+                                    </div>
+                                    
+                                    <p class="text-muted small mb-3">
+                                        {{ property.description|truncatechars:120 }}
+                                    </p>
+                                    
+                                    <div class="property-features mb-3">
+                                        <div class="property-feature">
+                                            <i class="fas fa-bed"></i>
+                                            <span>{{ property.number_of_rooms }} Beds</span>
+                                        </div>
+                                        <div class="property-feature">
+                                            <i class="fas fa-bath"></i>
+                                            <span>{{ property.bathrooms|default:"--" }} Baths</span>
+                                        </div>
+                                        <div class="property-feature">
+                                            <i class="fas fa-vector-square"></i>
+                                            <span>{{ property.square_feet|default:"--" }} sq ft</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <div class="property-price mb-0">
+                                            ${{ property.monthly_rent|floatformat:0 }}
+                                            <span class="property-price-caption">/month</span>
+                                        </div>
+                                        <a href="{% url 'property_detail' property.id %}" class="btn btn-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_location %}&location={{ selected_location }}{% endif %}{% if selected_property_type %}&property_type={{ selected_property_type }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in paginator.page_range %}
+                            {% if page_obj.number == i %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ i }}</span>
+                            </li>
+                            {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% if selected_location %}&location={{ selected_location }}{% endif %}{% if selected_property_type %}&property_type={{ selected_property_type }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}">{{ i }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_location %}&location={{ selected_location }}{% endif %}{% if selected_property_type %}&property_type={{ selected_property_type }}{% endif %}{% if selected_price_range %}&price_range={{ selected_price_range }}{% endif %}{% if selected_bedrooms %}&bedrooms={{ selected_bedrooms }}{% endif %}" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for View Toggle and Favorites -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View Toggle (Grid/List)
+        const viewOptions = document.querySelectorAll('.view-option');
+        const propertyGrid = document.getElementById('property-grid');
+        const propertyList = document.getElementById('property-list');
+        
+        viewOptions.forEach(function(option) {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                viewOptions.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+                
+                // Show/hide appropriate view
+                const viewType = this.getAttribute('data-view');
+                if (viewType === 'grid') {
+                    propertyGrid.classList.remove('d-none');
+                    propertyList.classList.add('d-none');
+                } else {
+                    propertyGrid.classList.add('d-none');
+                    propertyList.classList.remove('d-none');
+                }
+            });
+        });
+        
+        // Favorite Toggle
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+        
+        favoriteButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    // Switch to solid heart
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    // Could add AJAX call here to save favorite
+                } else {
+                    // Switch to outline heart
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Could add AJAX call here to remove favorite
+                }
+            });
+        });
+        
+        // Sort Options
+        const sortSelect = document.getElementById('sort-options');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                // This is where you could implement client-side sorting
+                // or reload the page with a sort parameter
+                const sortValue = this.value;
+                
+                // Example redirect for server-side sorting:
+                // window.location.href = window.location.pathname + '?sort=' + sortValue;
+                
+                // For demo purposes, just log the selected sort option
+                console.log('Sort by:', sortValue);
+            });
+        }
+    });
+</script>
+
+{% endblock %}

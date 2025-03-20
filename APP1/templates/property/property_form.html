@@ -1,0 +1,1447 @@
+{% extends 'base_header.html' %}
+
+{% block title %}{{ action }} Property{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e67e22;
+        --success-color: #27ae60;
+        --light-gray: #f8f9fa;
+        --border-color: #e9ecef;
+    }
+
+    body {
+        background-color: #f5f7fa;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: var(--primary-color);
+        border-bottom: none;
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .card-body {
+        padding: 2rem;
+    }
+    
+    .section-heading {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        margin-top: 2rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 6px;
+        padding: 0.65rem 1rem;
+        border: 1px solid var(--border-color);
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .input-group-text {
+        background-color: var(--light-gray);
+        border-color: var(--border-color);
+    }
+    
+    .btn {
+        padding: 0.65rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    
+    .btn-primary:hover {
+        background-color: #1a2530;
+        border-color: #1a2530;
+    }
+    
+    .btn-secondary {
+        background-color: #95a5a6;
+        border-color: #95a5a6;
+    }
+    
+    .btn-action {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+    
+    .btn-action:hover {
+        background-color: #d35400;
+        border-color: #d35400;
+        color: white;
+    }
+
+    .btn-success {
+        background-color: var(--success-color);
+        border-color: var(--success-color);
+    }
+
+    .btn-success:hover {
+        background-color: #1f8b4c;
+        border-color: #1f8b4c;
+    }
+    
+    #map {
+        height: 450px;
+        width: 100%;
+        margin: 1.5rem 0;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .location-controls {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-text {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: #e74c3c;
+        margin-left: 4px;
+    }
+    
+    .field-group {
+        margin-bottom: 1.75rem;
+    }
+    
+    .alert {
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert-info {
+        background-color: rgba(52, 152, 219, 0.1);
+        border-color: rgba(52, 152, 219, 0.2);
+        color: var(--secondary-color);
+    }
+    
+    .icon-spacing {
+        margin-right: 8px;
+    }
+    
+    /* Image upload and preview styles */
+    .image-preview-card {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .image-preview-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .primary-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1;
+    }
+    
+    .image-actions {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .image-preview-card:hover .image-actions {
+        opacity: 1;
+    }
+    
+    .preview-img {
+        height: 180px;
+        object-fit: cover;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+    }
+    
+    .drag-area {
+        border: 2px dashed var(--border-color);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        background-color: var(--light-gray);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .drag-area.active {
+        border-color: var(--secondary-color);
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+    
+    .drag-area i {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .image-category-badge {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        z-index: 1;
+    }
+
+    .section-divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 2.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <h1 class="mb-0">{{ action }} Property</h1>
+                <p class="mb-0">Manage your property details and location information</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card main-card">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate class="needs-validation" id="propertyForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Basic Information Section -->
+                        <h4 class="section-heading">
+                            <i class="bi bi-house-door icon-spacing"></i>Property Information
+                        </h4>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold required-field">Property Name</label>
+                            {{ form.name }}
+                            {% if form.name.help_text %}
+                                <div class="form-text">{{ form.name.help_text }}</div>
+                            {% endif %}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.property_type.id_for_label }}" class="form-label fw-bold required-field">Property Type</label>
+                            {{ form.property_type }}
+                            {% if form.property_type.help_text %}
+                                <div class="form-text">{{ form.property_type.help_text }}</div>
+                            {% endif %}
+                            {% if form.property_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.property_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label for="{{ form.number_of_rooms.id_for_label }}" class="form-label fw-bold required-field">Number of Rooms</label>
+                                    {{ form.number_of_rooms }}
+                                    {% if form.number_of_rooms.help_text %}
+                                        <div class="form-text">{{ form.number_of_rooms.help_text }}</div>
+                                    {% endif %}
+                                    {% if form.number_of_rooms.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.number_of_rooms.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label for="{{ form.monthly_rent.id_for_label }}" class="form-label fw-bold required-field">Monthly Rent (TZS)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">TZS</span>
+                                        {{ form.monthly_rent }}
+                                    </div>
+                                    <div class="form-text">Enter amount in Tanzanian Shillings (TZS)</div>
+                                    {% if form.monthly_rent.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.monthly_rent.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.status.id_for_label }}" class="form-label fw-bold required-field">Status</label>
+                            {{ form.status }}
+                            {% if form.status.help_text %}
+                                <div class="form-text">{{ form.status.help_text }}</div>
+                            {% endif %}
+                            {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.status.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Location Section -->
+                        <h4 class="section-heading">
+                            <i class="bi bi-geo-alt icon-spacing"></i>Property Location
+                        </h4>
+                        
+                        <div class="location-controls">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-action w-100" id="getCurrentLocation">
+                                        <i class="bi bi-geo-alt-fill icon-spacing"></i> Use Current Location
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="searchAddress" placeholder="Search for an address">
+                                        <button class="btn btn-secondary" type="button" id="geocodeAddress">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle icon-spacing"></i> Click on the map to set the property location or drag the marker to adjust it
+                        </div>
+                        
+                        <!-- Map will be inserted here -->
+                        <div id="map"></div>
+                        
+                        <h5 class="mt-4 mb-3">
+                            <i class="bi bi-house-fill icon-spacing"></i>Address Details
+                        </h5>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.address.id_for_label }}" class="form-label fw-bold required-field">Address</label>
+                            {{ form.address }}
+                            <div class="form-text">Complete address will be filled automatically from the map</div>
+                            {% if form.address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.address.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="field-group">
+                                    <label for="{{ form.city.id_for_label }}" class="form-label fw-bold required-field">City</label>
+                                    {{ form.city }}
+                                    {% if form.city.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.city.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-group">
+                                    <label for="{{ form.state.id_for_label }}" class="form-label fw-bold required-field">Region/Province</label>
+                                    {{ form.state }}
+                                    {% if form.state.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.state.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="field-group">
+                                    <label for="{{ form.zip_code.id_for_label }}" class="form-label fw-bold required-field">Postal Code</label>
+                                    {{ form.zip_code }}
+                                    {% if form.zip_code.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.zip_code.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label for="{{ form.latitude.id_for_label }}" class="form-label fw-bold">Latitude</label>
+                                    {{ form.latitude }}
+                                    <div class="form-text">Decimal format (e.g., -6.776012)</div>
+                                    {% if form.latitude.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.latitude.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="field-group">
+                                    <label for="{{ form.longitude.id_for_label }}" class="form-label fw-bold">Longitude</label>
+                                    {{ form.longitude }}
+                                    <div class="form-text">Decimal format (e.g., 39.178326)</div>
+                                    {% if form.longitude.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.longitude.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.place_id.id_for_label }}" class="form-label fw-bold">Google Place ID</label>
+                            {{ form.place_id }}
+                            <div class="form-text">Automatically generated when selecting from map</div>
+                            {% if form.place_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.place_id.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Administrative Section -->
+                        <h4 class="section-heading">
+                            <i class="bi bi-diagram-3 icon-spacing"></i>Administrative Divisions
+                        </h4>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.region.id_for_label }}" class="form-label fw-bold">Region</label>
+                            {{ form.region }}
+                            {% if form.region.help_text %}
+                                <div class="form-text">{{ form.region.help_text }}</div>
+                            {% endif %}
+                            {% if form.region.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.region.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.district.id_for_label }}" class="form-label fw-bold">District</label>
+                            {{ form.district }}
+                            {% if form.district.help_text %}
+                                <div class="form-text">{{ form.district.help_text }}</div>
+                            {% endif %}
+                            {% if form.district.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.district.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="field-group">
+                            <label for="{{ form.ward.id_for_label }}" class="form-label fw-bold">Ward</label>
+                            {{ form.ward }}
+                            {% if form.ward.help_text %}
+                                <div class="form-text">{{ form.ward.help_text }}</div>
+                            {% endif %}
+                            {% if form.ward.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.ward.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Images Section -->
+                        <h4 class="section-heading">
+                            <i class="bi bi-images icon-spacing"></i>Property Images
+                        </h4>
+                        
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle icon-spacing"></i> Upload high-quality images of your property. The first image will be set as the primary image shown in property listings.
+                        </div>
+                        
+                        <!-- Display existing images if editing a property -->
+                        {% if property_images %}
+                        <div class="mb-4">
+                            <h5 class="mb-3">Existing Images</h5>
+                            <div class="row">
+                                {% for image in property_images %}
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3">
+                                    <div class="card image-preview-card h-100">
+                                        {% if image.is_primary %}
+                                        <span class="badge bg-primary primary-badge">Primary</span>
+                                        {% endif %}
+                                        <img src="{{ image.image.url }}" class="preview-img" alt="{{ image.alt_text }}">
+                                        <div class="card-body p-2">
+                                            <p class="card-text small text-truncate mb-1">{{ image.title }}</p>
+                                            <small class="text-muted">{{ image.category|title|default:"General" }}</small>
+                                        </div>
+                                        <div class="image-actions">
+                                            <button type="button" class="btn btn-sm btn-danger delete-existing-image" 
+                                                    data-id="{{ image.id }}" data-bs-toggle="modal" data-bs-target="#deleteImageModal">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            {% if not image.is_primary %}
+                                            <button type="button" class="btn btn-sm btn-primary make-primary-image" 
+                                                    data-id="{{ image.id }}">
+                                                <i class="bi bi-star"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Modal for confirming image deletion -->
+                        <div class="modal fade" id="deleteImageModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Confirm Deletion</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this image? This action cannot be undone.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <form method="post" action="{% url 'property_image_delete' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="image_id" id="delete_image_id">
+                                            <input type="hidden" name="property_id" value="{{ property.id }}">
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3">Add New Images</h5>
+                        {% endif %}
+                        
+                        <!-- Drag and drop upload area -->
+                        <div class="drag-area mb-4" id="drag-area">
+                            <div class="icon">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                            </div>
+                            <h5>Drag & Drop to Upload Images</h5>
+                            <p>Or</p>
+                            <label for="property_images" class="btn btn-action">
+                                <i class="bi bi-images icon-spacing"></i> Browse Files
+                            </label>
+                            <input type="file" class="d-none" id="property_images" name="property_images" multiple accept="image/*">
+                            <p class="mt-2 text-muted">Upload property photos (max 10 images, 5MB each)</p>
+                        </div>
+                        
+                        <!-- Image category selection -->
+                        <div class="mb-4" id="image-categories-container" style="display: none;">
+                            <h5 class="mb-3">Image Categories</h5>
+                            <p class="mb-2">Select categories for your images to help organize them (optional)</p>
+                            
+                            <div class="image-categories row" id="image-categories">
+                                <!-- Categories will be added here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Preview of selected images -->
+                        <div class="image-preview-container" id="image-preview-container">
+                            <!-- Image previews will be added here by JavaScript -->
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <div>
+                                <a href="{% url 'property_list' %}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                {% if action == 'Create' %}
+                                    <i class="bi bi-plus-circle icon-spacing"></i> Create Property
+                                {% else %}
+                                    <i class="bi bi-save icon-spacing"></i> Save Changes
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for map functionality and image upload -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" 
+        crossorigin="anonymous"></script>
+
+<script>
+    let map;
+    let marker;
+    let geocoder;
+    let selectedFiles = []; // Array to store selected file objects
+
+    // Initialize the components when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+        setupCascadingDropdowns();
+        initImageUpload();
+        
+        // Setup existing image actions if editing a property
+        setupExistingImageActions();
+        
+        // Set proper currency placeholder
+        const rentField = document.getElementById('id_monthly_rent');
+        if (rentField) {
+            rentField.placeholder = 'Amount in TZS';
+        }
+    });
+
+    function initMap() {
+        // Initialize geocoder
+        geocoder = new google.maps.Geocoder();
+        
+        // Default Tanzania center location
+        const defaultLocation = { lat: -6.369028, lng: 34.888822 };
+        
+        // Use stored coordinates if available
+        const lat = parseFloat(document.getElementById('id_latitude').value);
+        const lng = parseFloat(document.getElementById('id_longitude').value);
+        
+        let center = defaultLocation;
+        if (!isNaN(lat) && !isNaN(lng)) {
+            center = { lat, lng };
+        }
+        
+        // Create the map with customized styling
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: center,
+            zoom: isNaN(lat) ? 6 : 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+            zoomControl: true,
+            styles: [
+                {
+                    "featureType": "administrative",
+                    "elementType": "labels.text.fill",
+                    "stylers": [{"color": "#444444"}]
+                },
+                {
+                    "featureType": "landscape",
+                    "elementType": "all",
+                    "stylers": [{"color": "#f2f2f2"}]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": [{"visibility": "off"}]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": [{"saturation": -100}, {"lightness": 45}]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "all",
+                    "stylers": [{"visibility": "simplified"}]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "all",
+                    "stylers": [{"color": "#46bcec"}, {"visibility": "on"}]
+                }
+            ]
+        });
+        
+        // Create marker if we have coordinates
+        if (!isNaN(lat) && !isNaN(lng)) {
+            marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                title: document.getElementById('id_name').value || 'Property Location'
+            });
+            
+            // Update coordinates when marker is dragged
+            google.maps.event.addListener(marker, 'dragend', function() {
+                updateCoordinates(marker.getPosition());
+            });
+        }
+        
+        // Add click event to map to place/move marker
+        google.maps.event.addListener(map, 'click', function(event) {
+            placeMarker(event.latLng);
+        });
+        
+        // Initialize Places Autocomplete for the search box
+        const input = document.getElementById('searchAddress');
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.setFields(['address_components', 'geometry', 'name', 'place_id']);
+        
+        // When a place is selected from autocomplete
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                return;
+            }
+            
+            // Center map on selected place
+            map.setCenter(place.geometry.location);
+            map.setZoom(15);
+            
+            // Place marker at the selected location
+            placeMarker(place.geometry.location);
+            
+            // Update place ID
+            document.getElementById('id_place_id').value = place.place_id || '';
+            
+            // Fill in address components
+            fillAddressComponents(place);
+        });
+    }
+    
+    function placeMarker(location) {
+        // Remove existing marker if any
+        if (marker) {
+            marker.setMap(null);
+        }
+        
+        // Create new marker
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP
+        });
+        
+        // Update form with coordinates
+        updateCoordinates(location);
+        
+        // Add drag event
+        google.maps.event.addListener(marker, 'dragend', function() {
+            updateCoordinates(marker.getPosition());
+        });
+        
+        // Center map on marker
+        map.panTo(location);
+    }
+    
+    function updateCoordinates(location) {
+        // Update latitude and longitude fields with 6 decimal places
+        document.getElementById('id_latitude').value = location.lat().toFixed(6);
+        document.getElementById('id_longitude').value = location.lng().toFixed(6);
+        
+        // Reverse geocode to get address details
+        geocoder.geocode({ 'location': location }, function(results, status) {
+            if (status === 'OK' && results[0]) {
+                // Update search box with formatted address
+                document.getElementById('searchAddress').value = results[0].formatted_address;
+                
+                // Update address field in the form
+                document.getElementById('id_address').value = results[0].formatted_address;
+                
+                // Update place ID if available
+                if (results[0].place_id) {
+                    document.getElementById('id_place_id').value = results[0].place_id;
+                }
+                
+                // Fill in address components
+                fillAddressComponents(results[0]);
+            }
+        });
+    }
+    
+    function fillAddressComponents(place) {
+        // Try to extract address components
+        if (!place.address_components) return;
+        
+        let city = '';
+        let state = '';
+        let zipCode = '';
+        
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+            
+            switch (componentType) {
+                // City
+                case 'locality':
+                    city = component.long_name;
+                    break;
+                    
+                // State/Province
+                case 'administrative_area_level_1':
+                    state = component.long_name;
+                    break;
+                    
+                // Postal code
+                case 'postal_code':
+                    zipCode = component.long_name;
+                    break;
+                    
+                // If no locality found, try these alternative types for city
+                case 'administrative_area_level_2':
+                    if (!city) city = component.long_name;
+                    break;
+                case 'sublocality_level_1':
+                    if (!city) city = component.long_name;
+                    break;
+            }
+        }
+        
+        // Update form fields
+        if (city) document.getElementById('id_city').value = city;
+        if (state) document.getElementById('id_state').value = state;
+        if (zipCode) document.getElementById('id_zip_code').value = zipCode;
+    }
+    
+    // Get current location button
+    document.getElementById('getCurrentLocation').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    map.setCenter(pos);
+                    map.setZoom(15);
+                    placeMarker(new google.maps.LatLng(pos.lat, pos.lng));
+                },
+                function(error) {
+                    let errorMessage = 'Could not get your location.';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += ' Please enable location access in your browser settings.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += ' Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += ' The request to get user location timed out.';
+                            break;
+                    }
+                    
+                    alert(errorMessage);
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by your browser.');
+        }
+    });
+    
+    // Find address button
+    document.getElementById('geocodeAddress').addEventListener('click', function() {
+        const address = document.getElementById('searchAddress').value;
+        if (!address) return;
+        
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status === 'OK' && results[0]) {
+                map.setCenter(results[0].geometry.location);
+                map.setZoom(15);
+                placeMarker(results[0].geometry.location);
+                
+                // Update place ID if available
+                if (results[0].place_id) {
+                    document.getElementById('id_place_id').value = results[0].place_id;
+                }
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    });
+    
+    // Handle key press in search input
+    document.getElementById('searchAddress').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('geocodeAddress').click();
+        }
+    });
+    
+    // Setup cascading dropdowns for regions, districts, and wards
+    function setupCascadingDropdowns() {
+        // Get form elements
+        const regionSelect = document.getElementById('id_region');
+        const districtSelect = document.getElementById('id_district');
+        const wardSelect = document.getElementById('id_ward');
+        
+        if (!regionSelect || !districtSelect || !wardSelect) return;
+        
+        // Handle region change
+        regionSelect.addEventListener('change', function() {
+            const regionId = this.value;
+            
+            // Reset district and ward dropdowns
+            districtSelect.innerHTML = '<option value="">Select District (Optional)</option>';
+            wardSelect.innerHTML = '<option value="">Select Ward (Optional)</option>';
+            
+            if (regionId) {
+                // Show loading indicator
+                districtSelect.innerHTML = '<option value="">Loading districts...</option>';
+                
+                // Fetch districts for the selected region using the correct URL and parameter
+                fetch(`/ajax/load-districts/?region=${regionId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();  // Return HTML directly as your view returns rendered HTML
+                    })
+                    .then(html => {
+                        // Replace the district dropdown's HTML with the response
+                        districtSelect.innerHTML = html;
+                        
+                        // Add default option if not present in template
+                        if (!districtSelect.querySelector('option[value=""]')) {
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = "";
+                            defaultOption.textContent = "Select District (Optional)";
+                            districtSelect.insertBefore(defaultOption, districtSelect.firstChild);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching districts:', error);
+                        districtSelect.innerHTML = '<option value="">Error loading districts</option>';
+                    });
+            }
+        });
+        
+        // Handle district change
+        districtSelect.addEventListener('change', function() {
+            const districtId = this.value;
+            
+            // Reset ward dropdown
+            wardSelect.innerHTML = '<option value="">Select Ward (Optional)</option>';
+            
+            if (districtId) {
+                // Show loading indicator
+                wardSelect.innerHTML = '<option value="">Loading wards...</option>';
+                
+                // Fetch wards for the selected district using the correct URL and parameter
+                fetch(`/ajax/load-wards/?district=${districtId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();  // Return HTML directly as your view returns rendered HTML
+                    })
+                    .then(html => {
+                        // Replace the ward dropdown's HTML with the response
+                        wardSelect.innerHTML = html;
+                        
+                        // Add default option if not present in template
+                        if (!wardSelect.querySelector('option[value=""]')) {
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = "";
+                            defaultOption.textContent = "Select Ward (Optional)";
+                            wardSelect.insertBefore(defaultOption, wardSelect.firstChild);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching wards:', error);
+                        wardSelect.innerHTML = '<option value="">Error loading wards</option>';
+                    });
+            }
+        });
+    }
+    
+    // Initialize image upload functionality
+    function initImageUpload() {
+        const dragArea = document.getElementById('drag-area');
+        const fileInput = document.getElementById('property_images');
+        const previewContainer = document.getElementById('image-preview-container');
+        const categoriesContainer = document.getElementById('image-categories-container');
+        const categoriesDiv = document.getElementById('image-categories');
+        
+        // Image categories
+        const categories = [
+            { id: 'exterior', name: 'Exterior', color: 'primary' },
+            { id: 'interior', name: 'Interior', color: 'info' },
+            { id: 'kitchen', name: 'Kitchen', color: 'success' },
+            { id: 'bathroom', name: 'Bathroom', color: 'secondary' },
+            { id: 'bedroom', name: 'Bedroom', color: 'warning' },
+            { id: 'living_area', name: 'Living Area', color: 'danger' },
+            { id: 'view', name: 'View', color: 'dark' },
+            { id: 'other', name: 'Other', color: 'light' }
+        ];
+        
+        // Click the hidden file input when the drag area is clicked
+        dragArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Highlight drag area when file is dragged over it
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('active');
+        });
+        
+        // Remove highlight when file is dragged out
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.classList.remove('active');
+        });
+        
+        // Handle dropped files
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('active');
+            
+            // Get dropped files
+            const files = e.dataTransfer.files;
+            
+            // Create a new FileList-like object from the dropped files
+            if (files.length > 0) {
+                processFiles(files);
+            }
+        });
+        
+        // Display image previews when files are selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                processFiles(this.files);
+            }
+        });
+        
+        // Process selected or dropped files
+        function processFiles(files) {
+            // Clear the file input to allow selecting the same file again
+            fileInput.value = '';
+            
+            // Show warning if too many files are selected
+            if (files.length > 10) {
+                alert('You can upload a maximum of 10 images. Only the first 10 will be processed.');
+            }
+            
+            // Process each file (up to 10)
+            const maxFiles = Math.min(files.length, 10);
+            let validFiles = [];
+            
+            for (let i = 0; i < maxFiles; i++) {
+                const file = files[i];
+                
+                // Skip non-image files
+                if (!file.type.startsWith('image/')) {
+                    alert(`"${file.name}" is not an image file and will be skipped.`);
+                    continue;
+                }
+                
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`The file "${file.name}" exceeds the maximum size of 5MB and will be skipped.`);
+                    continue;
+                }
+                
+                // Add to valid files
+                validFiles.push({
+                    file: file,
+                    category: guessCategory(file.name),
+                    index: selectedFiles.length + validFiles.length - 1
+                });
+            }
+            
+            // Add to selected files array
+            if (validFiles.length > 0) {
+                selectedFiles = selectedFiles.concat(validFiles);
+                
+                // Show categories section
+                setupCategoriesSection();
+                
+                // Show previews
+                updatePreviews();
+            }
+        }
+        
+        // Set up the categories UI
+        function setupCategoriesSection() {
+            // Show categories container
+            categoriesContainer.style.display = 'block';
+            
+            // Clear existing categories
+            categoriesDiv.innerHTML = '';
+            
+            // Create category buttons
+            categories.forEach(category => {
+                const col = document.createElement('div');
+                col.className = 'col-auto mb-2';
+                
+                col.innerHTML = `
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input category-checkbox" type="checkbox" id="category-${category.id}" 
+                               data-category="${category.id}">
+                        <label class="form-check-label" for="category-${category.id}">
+                            <span class="badge bg-${category.color} me-1">${category.name}</span>
+                        </label>
+                    </div>
+                `;
+                
+                // Add click handler for category
+                const checkbox = col.querySelector('.category-checkbox');
+                checkbox.addEventListener('change', function() {
+                    const categoryId = this.dataset.category;
+                    const checked = this.checked;
+                    
+                    // Apply category to all selected images
+                    const selectedImgs = document.querySelectorAll('.image-preview-card.selected');
+                    if (selectedImgs.length > 0) {
+                        selectedImgs.forEach(card => {
+                            const index = parseInt(card.dataset.index);
+                            if (index >= 0 && index < selectedFiles.length) {
+                                // Update category
+                                selectedFiles[index].category = checked ? categoryId : 'other';
+                                
+                                // Update preview
+                                updateCategoryBadge(card, selectedFiles[index].category);
+                            }
+                        });
+                    }
+                });
+                
+                categoriesDiv.appendChild(col);
+            });
+            
+            // Add button to select all/deselect all
+            const col = document.createElement('div');
+            col.className = 'col-12 mt-2';
+            col.innerHTML = `
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" id="select-all-images">
+                    <i class="bi bi-check-all"></i> Select All
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="deselect-all-images">
+                    <i class="bi bi-x-lg"></i> Deselect All
+                </button>
+            `;
+            
+            // Add click handlers
+            col.querySelector('#select-all-images').addEventListener('click', function() {
+                document.querySelectorAll('.image-preview-card').forEach(card => {
+                    card.classList.add('selected');
+                    card.style.borderColor = 'var(--primary-color)';
+                    card.style.boxShadow = '0 0 0 0.25rem rgba(52, 152, 219, 0.25)';
+                });
+            });
+            
+            col.querySelector('#deselect-all-images').addEventListener('click', function() {
+                document.querySelectorAll('.image-preview-card.selected').forEach(card => {
+                    card.classList.remove('selected');
+                    card.style.borderColor = '';
+                    card.style.boxShadow = '';
+                });
+            });
+            
+            categoriesDiv.appendChild(col);
+        }
+        
+        // Update image previews
+        function updatePreviews() {
+            // Clear existing previews
+            previewContainer.innerHTML = '';
+            
+            // Create a new DataTransfer object to build a new FileList
+            const dataTransfer = new DataTransfer();
+            
+            // Create previews for each file
+            selectedFiles.forEach((item, index) => {
+                // Add to file list
+                dataTransfer.items.add(item.file);
+                
+                // Create preview card
+                createImagePreview(item, index);
+            });
+            
+            // Update the file input with the new FileList
+            fileInput.files = dataTransfer.files;
+        }
+        
+        // Create image preview card
+        function createImagePreview(item, index) {
+            const col = document.createElement('div');
+            col.className = 'col-lg-3 col-md-4 col-sm-6 col-12 mb-3';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const card = document.createElement('div');
+                card.className = 'card image-preview-card h-100';
+                card.dataset.index = index;
+                
+                // Add primary badge if first image
+                if (index === 0) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-primary primary-badge';
+                    badge.textContent = 'Primary';
+                    card.appendChild(badge);
+                }
+                
+                // Add image
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'preview-img';
+                img.alt = item.file.name;
+                card.appendChild(img);
+                
+                // Add category badge
+                updateCategoryBadge(card, item.category);
+                
+                // Add body with filename and size
+                const body = document.createElement('div');
+                body.className = 'card-body p-2';
+                body.innerHTML = `
+                    <p class="card-text small text-truncate mb-1" title="${item.file.name}">${item.file.name}</p>
+                    <small class="text-muted">${formatFileSize(item.file.size)}</small>
+                `;
+                card.appendChild(body);
+                
+                // Add actions
+                const actions = document.createElement('div');
+                actions.className = 'image-actions';
+                actions.innerHTML = `
+                    <button type="button" class="btn btn-sm btn-danger delete-image" data-index="${index}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                card.appendChild(actions);
+                
+                // Add delete button functionality
+                card.querySelector('.delete-image').addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    
+                    // Remove from selected files
+                    selectedFiles.splice(index, 1);
+                    
+                    // Update previews
+                    updatePreviews();
+                });
+                
+                // Add click to select
+                card.addEventListener('click', function(e) {
+                    // Ignore clicks on buttons
+                    if (e.target.closest('.btn')) return;
+                    
+                    // Toggle selected class
+                    this.classList.toggle('selected');
+                    
+                    // Update style
+                    if (this.classList.contains('selected')) {
+                        this.style.borderColor = 'var(--primary-color)';
+                        this.style.boxShadow = '0 0 0 0.25rem rgba(52, 152, 219, 0.25)';
+                    } else {
+                        this.style.borderColor = '';
+                        this.style.boxShadow = '';
+                    }
+                });
+                
+                col.appendChild(card);
+                previewContainer.appendChild(col);
+            };
+            reader.readAsDataURL(item.file);
+        }
+        
+        // Update category badge on a card
+        function updateCategoryBadge(card, category) {
+            // Remove existing badge
+            const existingBadge = card.querySelector('.image-category-badge');
+            if (existingBadge) {
+                existingBadge.remove();
+            }
+            
+            // Add new badge if category is set
+            if (category && category !== 'other') {
+                const categoryObj = categories.find(c => c.id === category);
+                if (categoryObj) {
+                    const badge = document.createElement('span');
+                    badge.className = `badge bg-${categoryObj.color} image-category-badge`;
+                    badge.textContent = categoryObj.name;
+                    card.appendChild(badge);
+                }
+            }
+        }
+        
+        // Guess category from filename
+        function guessCategory(filename) {
+            filename = filename.toLowerCase();
+            
+            if (filename.includes('exterior') || filename.includes('outside') || filename.includes('front')) {
+                return 'exterior';
+            } else if (filename.includes('kitchen')) {
+                return 'kitchen';
+            } else if (filename.includes('bathroom') || filename.includes('bath')) {
+                return 'bathroom';
+            } else if (filename.includes('bedroom') || filename.includes('bed')) {
+                return 'bedroom';
+            } else if (filename.includes('living') || filename.includes('lounge')) {
+                return 'living_area';
+            } else if (filename.includes('view')) {
+                return 'view';
+            } else {
+                return 'other';
+            }
+        }
+        
+        // Format file size to KB/MB
+        function formatFileSize(bytes) {
+            if (bytes < 1024) {
+                return bytes + ' B';
+            } else if (bytes < 1024 * 1024) {
+                return (bytes / 1024).toFixed(1) + ' KB';
+            } else {
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+        }
+    }
+    
+    // Setup actions for existing images (when editing)
+    function setupExistingImageActions() {
+        // Handle delete existing image click
+        const deleteButtons = document.querySelectorAll('.delete-existing-image');
+        if (deleteButtons.length > 0) {
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.dataset.id;
+                    document.getElementById('delete_image_id').value = imageId;
+                });
+            });
+        }
+        
+        // Handle make primary image click
+        const primaryButtons = document.querySelectorAll('.make-primary-image');
+        if (primaryButtons.length > 0) {
+            primaryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const imageId = this.dataset.id;
+                    const propertyId = document.querySelector('input[name="property_id"]').value;
+                    
+                    // Create form and submit
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/properties/make-primary-image/';
+                    form.style.display = 'none';
+                    
+                    // Add CSRF token
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrfmiddlewaretoken';
+                    csrfInput.value = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                    form.appendChild(csrfInput);
+                    
+                    // Add image ID
+                    const imageInput = document.createElement('input');
+                    imageInput.type = 'hidden';
+                    imageInput.name = 'image_id';
+                    imageInput.value = imageId;
+                    form.appendChild(imageInput);
+                    
+                    // Add property ID
+                    const propertyInput = document.createElement('input');
+                    propertyInput.type = 'hidden';
+                    propertyInput.name = 'property_id';
+                    propertyInput.value = propertyId;
+                    form.appendChild(propertyInput);
+                    
+                    // Append to document and submit
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            });
+        }
+    }
+</script>
+{% endblock %}

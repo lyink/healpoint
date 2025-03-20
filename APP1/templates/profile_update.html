@@ -1,0 +1,165 @@
+{% extends 'base_header.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Update Profile</h2>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h4>Account Information</h4>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_username">Username</label>
+                                    {{ user_form.username }}
+                                    {% if user_form.username.errors %}
+                                        <div class="text-danger">{{ user_form.username.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_email">Email</label>
+                                    {{ user_form.email }}
+                                    {% if user_form.email.errors %}
+                                        <div class="text-danger">{{ user_form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_password">New Password (leave blank to keep current)</label>
+                                    {{ user_form.password }}
+                                    {% if user_form.password.errors %}
+                                        <div class="text-danger">{{ user_form.password.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_confirm_password">Confirm New Password</label>
+                                    {{ user_form.confirm_password }}
+                                    {% if user_form.confirm_password.errors %}
+                                        <div class="text-danger">{{ user_form.confirm_password.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h4>Personal Information</h4>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_first_name">First Name</label>
+                                    {{ user_form.first_name }}
+                                    {% if user_form.first_name.errors %}
+                                        <div class="text-danger">{{ user_form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_last_name">Last Name</label>
+                                    {{ user_form.last_name }}
+                                    {% if user_form.last_name.errors %}
+                                        <div class="text-danger">{{ user_form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_role">Role</label>
+                                    {{ user_form.role }}
+                                    {% if user_form.role.errors %}
+                                        <div class="text-danger">{{ user_form.role.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_profile_pic">Profile Picture</label>
+                                    {% if user.profile_pic_data %}
+                                        <div class="mb-2">
+                                            <img src="data:{{ user.profile_pic_type }};base64,{{ user.get_profile_pic_base64 }}" 
+                                                 alt="Current profile picture" class="img-thumbnail" style="max-width: 100px;">
+                                        </div>
+                                    {% endif %}
+                                    {{ user_form.profile_pic }}
+                                    {% if user_form.profile_pic.errors %}
+                                        <div class="text-danger">{{ user_form.profile_pic.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4>Contact Information</h4>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_phone_number">Phone Number</label>
+                                    {{ profile_form.phone_number }}
+                                    {% if profile_form.phone_number.errors %}
+                                        <div class="text-danger">{{ profile_form.phone_number.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="id_address">Address</label>
+                                    {{ profile_form.address }}
+                                    {% if profile_form.address.errors %}
+                                        <div class="text-danger">{{ profile_form.address.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Role-specific fields -->
+                        <div class="mb-4">
+                            {% if user.role == 'landlord' %}
+                                <h4>Landlord Information</h4>
+                                <div class="form-group mb-3">
+                                    <label for="id_company_name">Company Name (Optional)</label>
+                                    {{ profile_form.company_name }}
+                                </div>
+                            {% elif user.role == 'agent' %}
+                                <h4>Agent Information</h4>
+                                <div class="form-group mb-3">
+                                    <label for="id_license_number">License Number (Optional)</label>
+                                    {{ profile_form.license_number }}
+                                </div>
+                            {% elif user.role == 'tenant' %}
+                                <h4>Tenant Information</h4>
+                                <div class="form-group mb-3">
+                                    <label for="id_preferred_location">Preferred Location (Optional)</label>
+                                    {{ profile_form.preferred_location }}
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="id_max_budget">Maximum Budget (Optional)</label>
+                                    {{ profile_form.max_budget }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ property.name }} - Rental Property{% endblock %}
+
+{% block content %}
+
+<!-- Google Fonts and Font Awesome included from base.html -->
+
+<!-- Custom CSS for Property Detail Page -->
+<style>
+    /* Modern Color Scheme */
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #34495e;
+        --accent-color: #3498db;
+        --success-color: #27ae60;
+        --warning-color: #f39c12;
+        --danger-color: #e74c3c;
+        --light-color: #ecf0f1;
+        --dark-color: #2c3e50;
+        --text-color: #333;
+        --text-muted: #7f8c8d;
+        --border-radius: 8px;
+        --border-radius-sm: 4px;
+        --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+    }
+    
+    /* Property Header */
+    .property-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 60px 0 30px;
+        position: relative;
+        color: white;
+    }
+    
+    .property-breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .property-breadcrumb .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .property-breadcrumb .breadcrumb-item.active {
+        color: white;
+    }
+    
+    .property-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .property-title {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+    
+    .property-address {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .property-address i {
+        margin-right: 10px;
+        color: var(--accent-color);
+    }
+    
+    /* Property Meta Info Card */
+    .property-meta {
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 25px;
+        margin-top: -30px;
+        box-shadow: var(--box-shadow);
+        position: relative;
+        z-index: 10;
+        border-top: 4px solid var(--accent-color);
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    .property-meta-item {
+        text-align: center;
+        position: relative;
+    }
+    
+    .property-meta-item:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 20%;
+        height: 60%;
+        width: 1px;
+        background-color: rgba(0,0,0,0.08);
+    }
+    
+    .meta-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+    }
+    
+    .meta-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Gallery and Image Viewer */
+    .property-gallery {
+        margin-bottom: 40px;
+    }
+    
+    .main-image-container {
+        height: 500px;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+        position: relative;
+        margin-bottom: 15px;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .main-image-container:hover .main-image {
+        transform: scale(1.03);
+    }
+    
+    .gallery-thumbnails {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+        scrollbar-width: thin;
+    }
+    
+    .gallery-thumbnails::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .gallery-thumbnails::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    .gallery-thumbnails::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+    
+    .gallery-thumbnail {
+        min-width: 110px;
+        height: 80px;
+        border-radius: var(--border-radius-sm);
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: var(--transition);
+        border: 2px solid transparent;
+    }
+    
+    .gallery-thumbnail.active {
+        opacity: 1;
+        border-color: var(--accent-color);
+    }
+    
+    .gallery-thumbnail:hover {
+        opacity: 0.9;
+    }
+    
+    .gallery-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .image-controls {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 5;
+        opacity: 0;
+        transition: var(--transition);
+    }
+    
+    .main-image-container:hover .image-controls {
+        opacity: 1;
+    }
+    
+    .image-control {
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+    }
+    
+    .image-control:hover {
+        background-color: var(--accent-color);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    .image-actions {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        z-index: 5;
+    }
+    
+    .image-action-btn {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        margin-left: 10px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+        border: none;
+    }
+    
+    .image-action-btn:hover {
+        background-color: var(--accent-color);
+        color: white;
+        transform: scale(1.1);
+    }
+    
+    /* Property Details Tabs */
+    .property-tabs {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .property-tabs .nav-link {
+        color: var(--text-muted);
+        font-weight: 600;
+        padding: 15px 25px;
+        border: none;
+        border-bottom: 3px solid transparent;
+        transition: var(--transition);
+        position: relative;
+    }
+    
+    .property-tabs .nav-link:hover {
+        color: var(--accent-color);
+    }
+    
+    .property-tabs .nav-link.active {
+        color: var(--accent-color);
+        background-color: transparent;
+        border-bottom: 3px solid var(--accent-color);
+    }
+    
+    .property-tabs .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -3px;
+        left: 50%;
+        margin-left: -6px;
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid var(--accent-color);
+    }
+    
+    .tab-content {
+        padding: 35px 0;
+    }
+    
+    /* Features and Amenities */
+    .features-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .feature-item {
+        flex: 0 0 calc(33.333% - 10px);
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: rgba(52, 152, 219, 0.08);
+        border-radius: var(--border-radius);
+        color: var(--text-color);
+        transition: var(--transition);
+    }
+    
+    .feature-item:hover {
+        background-color: rgba(52, 152, 219, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .feature-item i {
+        color: var(--accent-color);
+        margin-right: 12px;
+        font-size: 1.2rem;
+    }
+    
+    /* Agent Card */
+    .agent-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        overflow: hidden;
+    }
+    
+    .agent-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .agent-image-container {
+        height: 220px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .agent-image-container::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    }
+    
+    .agent-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .agent-card:hover .agent-image {
+        transform: scale(1.05);
+    }
+    
+    .agent-contact-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    
+    .agent-contact-item i {
+        width: 38px;
+        height: 38px;
+        background-color: rgba(52, 152, 219, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color);
+        margin-right: 12px;
+    }
+    
+    /* Inquiry Form */
+    .inquiry-form {
+        background-color: #fff;
+        border-radius: var(--border-radius);
+        padding: 30px;
+        box-shadow: var(--box-shadow);
+        border-top: 4px solid var(--success-color);
+    }
+    
+    .inquiry-form .form-control {
+        border-radius: var(--border-radius-sm);
+        padding: 12px 15px;
+        border: 1px solid rgba(0,0,0,0.1);
+        transition: var(--transition);
+    }
+    
+    .inquiry-form .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.1);
+    }
+    
+    .inquiry-form .btn-primary {
+        padding: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Similar Properties */
+    .similar-property-card {
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .similar-property-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .similar-property-image {
+        height: 180px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .similar-property-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .similar-property-card:hover .similar-property-image img {
+        transform: scale(1.08);
+    }
+    
+    .similar-property-image::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+        opacity: 0.8;
+    }
+    
+    /* Map Section */
+    .map-container {
+        height: 400px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+    }
+    
+    #propertyMap {
+        height: 100%;
+        width: 100%;
+    }
+    
+    /* Call to Action Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        padding: 70px 0;
+        margin-top: 70px;
+    }
+    
+    .cta-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
+    }
+    
+    /* Property Details Summary Card */
+    .property-details-card .card-header {
+        border-bottom: none;
+        padding: 20px;
+    }
+    
+    .property-details-card .list-group-item {
+        padding: 15px 20px;
+        border-color: rgba(0,0,0,0.05);
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 767px) {
+        .property-title {
+            font-size: 2rem;
+        }
+        
+        .main-image-container {
+            height: 300px;
+        }
+        
+        .property-meta-item {
+            position: relative;
+        }
+        
+        .property-meta-item::after {
+            display: none;
+        }
+        
+        .property-meta-item:not(:last-child) {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-item {
+            flex: 0 0 100%;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
+    }
+    
+    @media (min-width: 768px) and (max-width: 991px) {
+        .feature-item {
+            flex: 0 0 calc(50% - 10px);
+        }
+    }
+    
+    /* Status Badge Styles */
+    .badge.bg-available {
+        background-color: var(--success-color) !important;
+    }
+    
+    .badge.bg-pending {
+        background-color: var(--warning-color) !important;
+    }
+    
+    .badge.bg-rented {
+        background-color: var(--danger-color) !important;
+    }
+    
+    /* Price Tags */
+    .price-tag {
+        font-weight: 700;
+        color: var(--success-color);
+    }
+    
+    /* Utility Classes */
+    .text-accent {
+        color: var(--accent-color) !important;
+    }
+    
+    .text-available {
+        color: var(--success-color) !important;
+    }
+    
+    .text-pending {
+        color: var(--warning-color) !important;
+    }
+    
+    .text-rented {
+        color: var(--danger-color) !important;
+    }
+    
+    /* Progress bar for viewing activity */
+    .viewing-activity {
+        background-color: rgba(52, 152, 219, 0.05);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .activity-progress {
+        height: 6px;
+        border-radius: 3px;
+        background-color: #e9ecef;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+    
+    .activity-bar {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--accent-color), var(--success-color));
+        width: 85%;
+        transition: width 1.5s ease-in-out;
+    }
+    
+    /* Floating action button */
+    .floating-action-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        z-index: 99;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .floating-action-btn:hover {
+        transform: scale(1.1) rotate(10deg);
+        background-color: var(--primary-color);
+    }
+    
+    /* Property quick actions */
+    .quick-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .quick-action-btn {
+        flex: 1;
+        text-align: center;
+        padding: 15px 10px;
+        border-radius: var(--border-radius);
+        background-color: #f8f9fa;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .quick-action-btn:hover {
+        background-color: var(--accent-color);
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .quick-action-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .quick-action-btn span {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .btn-outline-primary {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        color: white;
+    }
+    
+    .btn-primary {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+    }
+    
+    .shadow-hover {
+        transition: var(--transition);
+    }
+    
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+
+<!-- Property Header Banner -->
+<section class="property-header">
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="property-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'property_list' %}" class="text-white">Properties</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ property.name }}</li>
+            </ol>
+        </nav>
+        
+        <!-- Property Title and Location -->
+        <h1 class="property-title">{{ property.name }}</h1>
+        <div class="property-address">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</span>
+        </div>
+        
+        <!-- Property Status and Price -->
+        <div class="d-flex align-items-center">
+            <span class="badge bg-{{ property.status|slugify }} py-2 px-3 me-3">
+                {{ property.get_status_display }}
+            </span>
+            <h3 class="text-white mb-0">${{ property.monthly_rent|floatformat:0 }}<small class="text-white-50">/month</small></h3>
+        </div>
+    </div>
+</section>
+
+<!-- Property Meta Information -->
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="property-meta">
+                <div class="row">
+                    <div class="col-6 col-md-3 property-meta-item">
+                        <div class="meta-value">{{ property.number_of_rooms }}</div>
+                        <div class="meta-label">Bedrooms</div>
+                    </div>
+                    <div class="col-6 col-md-3 property-meta-item">
+                        <div class="meta-value">{{ property_features.bathrooms|default:"N/A" }}</div>
+                        <div class="meta-label">Bathrooms</div>
+                    </div>
+                    <div class="col-6 col-md-3 property-meta-item">
+                        <div class="meta-value">{{ property_features.square_feet|default:"N/A" }}</div>
+                        <div class="meta-label">Square Feet</div>
+                    </div>
+                    <div class="col-6 col-md-3 property-meta-item">
+                        <div class="meta-value">{{ property.property_type.name }}</div>
+                        <div class="meta-label">Property Type</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Property Details Column (8 Columns) -->
+            <div class="col-lg-8">
+                <!-- Property Gallery -->
+                <div class="property-gallery" id="gallery">
+                    <div class="main-image-container">
+                        {% if property_images %}
+                            <img id="mainImage" src="{{ property_images.0.image.url }}" 
+                                 alt="{{ property_images.0.alt_text|default:property.name }}" 
+                                 class="main-image">
+                                 
+                            <!-- Image Navigation Controls -->
+                            <div class="image-controls">
+                                <div class="image-control" id="prevImage">
+                                    <i class="fas fa-chevron-left"></i>
+                                </div>
+                                <div class="image-control" id="nextImage">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Actions -->
+                            <div class="image-actions">
+                                <button type="button" class="image-action-btn" id="fullscreenToggle">
+                                    <i class="fas fa-expand-alt"></i>
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-home fa-5x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Thumbnail Gallery -->
+                    {% if property_images.count > 1 %}
+                    <div class="gallery-thumbnails">
+                        {% for image in property_images %}
+                        <div class="gallery-thumbnail {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                            <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'Thumbnail' }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Property Details Tabs -->
+                <div class="property-details-tabs">
+                    <ul class="nav nav-tabs property-tabs" id="propertyTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#description" type="button" role="tab" 
+                                    aria-controls="description" aria-selected="true">
+                                Description
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="features-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#features" type="button" role="tab" 
+                                    aria-controls="features" aria-selected="false">
+                                Features & Amenities
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="location-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#location" type="button" role="tab" 
+                                    aria-controls="location" aria-selected="false">
+                                Location
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="propertyTabContent">
+                        <!-- Description Tab -->
+                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                            <h4 class="mb-4">About This Property</h4>
+                            
+                            <div class="property-description">
+                                {% if property.description %}
+                                    {{ property.description|linebreaks }}
+                                {% else %}
+                                    <p>This beautiful {{ property.number_of_rooms }}-bedroom rental property is located in 
+                                    {{ property.city }}, {{ property.state }}. It features {{ property_features.bathrooms|default:"modern" }} 
+                                    bathrooms, {{ property_features.square_feet|default:"spacious" }} living space, and is available for 
+                                    ${{ property.monthly_rent|floatformat:0 }} per month.</p>
+                                    
+                                    <p>This {{ property.property_type.name }} is perfect for those seeking a comfortable living space 
+                                    in a convenient location. Don't miss this opportunity to make it your home!</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Features Tab -->
+                        <div class="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+                            <h4 class="mb-4">Features & Amenities</h4>
+                            
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fas fa-bed"></i>
+                                    <span>{{ property.number_of_rooms }} Bedrooms</span>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <i class="fas fa-bath"></i>
+                                    <span>{{ property_features.bathrooms|default:"--" }} Bathrooms</span>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <i class="fas fa-vector-square"></i>
+                                    <span>{{ property_features.square_feet|default:"--" }} sq ft</span>
+                                </div>
+                                
+                                {% if property_features.parking %}
+                                <div class="feature-item">
+                                    <i class="fas fa-car"></i>
+                                    <span>{{ property_features.parking }} Parking</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if property.property_type %}
+                                <div class="feature-item">
+                                    <i class="fas fa-home"></i>
+                                    <span>{{ property.property_type.name }}</span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Add more features as needed -->
+                                <div class="feature-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ property.city }}, {{ property.state }}</span>
+                                </div>
+                                
+                                <!-- Amenities loop (if available) -->
+                                {% for amenity in property_features.amenities %}
+                                <div class="feature-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>{{ amenity }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Location Tab -->
+                        <div class="tab-pane fade" id="location" role="tabpanel" aria-labelledby="location-tab">
+                            <h4 class="mb-4">Location Information</h4>
+                            
+                            <p>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+                            
+                            {% if location_hierarchy %}
+                            <p><strong>Location Hierarchy:</strong> {{ location_hierarchy }}</p>
+                            {% endif %}
+                            
+                            <!-- Map Display -->
+                            <div class="map-container mt-4">
+                                {% if google_maps_url %}
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    style="border:0" 
+                                    src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY_HERE&q={{ property.latitude }},{{ property.longitude }}" 
+                                    allowfullscreen>
+                                </iframe>
+                                {% elif property.address %}
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    style="border:0" 
+                                    src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY_HERE&q={{ property.address|urlencode }},{{ property.city|urlencode }},{{ property.state|urlencode }}" 
+                                    allowfullscreen>
+                                </iframe>
+                                {% else %}
+                                <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                    <p class="text-muted">Map location not available</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if google_maps_url %}
+                            <div class="text-center mt-3">
+                                <a href="{{ google_maps_url }}" target="_blank" class="btn btn-outline-primary">
+                                    <i class="fas fa-map-marked-alt me-2"></i> View on Google Maps
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Similar Properties Section -->
+                <div class="similar-properties mt-5">
+                    <h4 class="mb-4">Similar Properties</h4>
+                    
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        {% for similar in similar_properties %}
+                        <div class="col">
+                            <div class="similar-property-card">
+                                <div class="similar-property-image">
+                                    {% with primary_image=similar.get_primary_image %}
+                                    {% if primary_image %}
+                                    <img src="{{ primary_image.image.url }}" alt="{{ primary_image.alt_text|default:similar.name }}">
+                                    {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                                
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ similar.name }}</h5>
+                                    <p class="card-text text-muted">{{ similar.city }}, {{ similar.state }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="price-tag">${{ similar.monthly_rent|floatformat:0 }}/mo</span>
+                                        <a href="{% url 'property_detail' similar.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted">No similar properties available at the moment.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Column (4 Columns) -->
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <!-- Contact Agent Card -->
+                {% if agent %}
+                <div class="agent-card mb-4">
+                    <div class="agent-image-container">
+                        {% if agent.image %}
+                        <img src="{{ agent.image.url }}" alt="{{ agent.name }}" class="agent-image">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center h-100">
+                            <i class="fas fa-user fa-4x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ agent.name }}</h5>
+                        <p class="card-text text-accent">{{ agent.role }}</p>
+                        
+                        <div class="agent-contact-info mt-3">
+                            <div class="agent-contact-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>(123) 456-7890</span>
+                            </div>
+                            <div class="agent-contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ agent.name|slugify }}@example.com</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            {% if agent.linkedin or agent.twitter or agent.facebook %}
+                            <div class="social-links">
+                                {% if agent.linkedin %}
+                                <a href="{{ agent.linkedin }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                {% endif %}
+                                {% if agent.twitter %}
+                                <a href="{{ agent.twitter }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                {% endif %}
+                                {% if agent.facebook %}
+                                <a href="{{ agent.facebook }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Inquiry Form -->
+                <div class="inquiry-form mb-4">
+                    <h5 class="mb-4">Interested in this property?</h5>
+                    
+                    <form action="{% url 'property_inquiry' property.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="inquiryName" class="form-label">Your Name</label>
+                            <input type="text" class="form-control" id="inquiryName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inquiryEmail" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="inquiryEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="inquiryPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="inquiryPhone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inquiryMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="inquiryMessage" name="message" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="inquiryScheduleVisit" name="schedule_visit">
+                            <label class="form-check-label" for="inquiryScheduleVisit">I would like to schedule a visit</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Send Inquiry</button>
+                    </form>
+                </div>
+                
+                <!-- Property Details Summary Card -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Property Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Property ID:</span>
+                                <strong>#{{ property.id }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Property Type:</span>
+                                <strong>{{ property.property_type.name }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Bedrooms:</span>
+                                <strong>{{ property.number_of_rooms }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Bathrooms:</span>
+                                <strong>{{ property_features.bathrooms|default:"N/A" }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Size:</span>
+                                <strong>{{ property_features.square_feet|default:"N/A" }} sq ft</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span>Status:</span>
+                                <strong class="text-{{ property.status|slugify }}">{{ property.get_status_display }}</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0 border-bottom-0">
+                                <span>Monthly Rent:</span>
+                                <strong class="text-success">${{ property.monthly_rent|floatformat:0 }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Share Property Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Share This Property</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                               target="_blank" class="btn btn-outline-primary">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this property: {{ property.name }}" 
+                               target="_blank" class="btn btn-outline-info">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://wa.me/?text=Check out this property: {{ property.name }} {{ request.build_absolute_uri }}" 
+                               target="_blank" class="btn btn-outline-success">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="mailto:?subject=Check out this property: {{ property.name }}&body=I found this property and thought you might be interested: {{ request.build_absolute_uri }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content text-center">
+            <h2 class="cta-title">Looking for Something Different?</h2>
+            <p class="cta-text">We have hundreds of properties available. Start your search now to find your perfect match.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <a href="{% url 'property_list' %}" class="btn btn-light btn-lg w-100 mb-3 mb-md-0">Browse Properties</a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" class="btn btn-outline-light btn-lg w-100">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for Property Detail Page -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Property Image Gallery
+        const mainImage = document.getElementById('mainImage');
+        const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+        const prevButton = document.getElementById('prevImage');
+        const nextButton = document.getElementById('nextImage');
+        const fullscreenToggle = document.getElementById('fullscreenToggle');
+        
+        // Array to store image paths
+        const images = [];
+        {% for image in property_images %}
+            images.push({
+                url: "{{ image.image.url }}",
+                alt: "{{ image.alt_text|default:property.name }}"
+            });
+        {% endfor %}
+        
+        let currentImageIndex = 0;
+        
+        // Function to update the main image
+        function updateMainImage(index) {
+            if (images.length === 0) return;
+            
+            // Ensure index is within bounds
+            if (index < 0) index = images.length - 1;
+            if (index >= images.length) index = 0;
+            
+            currentImageIndex = index;
+            
+            // Update main image
+            mainImage.src = images[index].url;
+            mainImage.alt = images[index].alt;
+            
+            // Update active thumbnail
+            thumbnails.forEach((thumbnail, i) => {
+                if (i === index) {
+                    thumbnail.classList.add('active');
+                } else {
+                    thumbnail.classList.remove('active');
+                }
+            });
+        }
+        
+        // Add event listeners to thumbnails
+        thumbnails.forEach((thumbnail, index) => {
+            thumbnail.addEventListener('click', () => {
+                updateMainImage(index);
+            });
+        });
+        
+        // Add event listeners to navigation buttons
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                updateMainImage(currentImageIndex - 1);
+            });
+        }
+        
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                updateMainImage(currentImageIndex + 1);
+            });
+        }
+        
+        // Fullscreen toggle functionality
+        if (fullscreenToggle && mainImage) {
+            fullscreenToggle.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    if (mainImage.requestFullscreen) {
+                        mainImage.requestFullscreen();
+                    } else if (mainImage.webkitRequestFullscreen) {
+                        mainImage.webkitRequestFullscreen();
+                    } else if (mainImage.msRequestFullscreen) {
+                        mainImage.msRequestFullscreen();
+                    }
+                    fullscreenToggle.querySelector('i').classList.remove('fa-expand-alt');
+                    fullscreenToggle.querySelector('i').classList.add('fa-compress-alt');
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                    fullscreenToggle.querySelector('i').classList.remove('fa-compress-alt');
+                    fullscreenToggle.querySelector('i').classList.add('fa-expand-alt');
+                }
+            });
+            
+            // Listen for fullscreen change
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    fullscreenToggle.querySelector('i').classList.remove('fa-compress-alt');
+                    fullscreenToggle.querySelector('i').classList.add('fa-expand-alt');
+                }
+            });
+        }
+        
+        // Keyboard navigation for gallery
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                updateMainImage(currentImageIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+                updateMainImage(currentImageIndex + 1);
+            }
+        });
+    });
+</script>
+{% endblock %}

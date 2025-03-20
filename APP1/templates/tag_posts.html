@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h3 class="text-primary mt-3" style="text-align:center;">Posts with Tag: {{ tag.name }}</h3>
+<div class="container">
+  <div class="row">
+    {% for post in posts %}
+    <div class="card mb-3 me-4" style="max-width: 540px;">
+      <div class="row g-0">
+        <div class="col-md-5">
+          {% if post.featured_image %}
+          <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="img-thumbnail mt-3" />
+          {% else %}
+          <img src="{% static 'images/default_image.jpg' %}" alt="Default Image" class="img-thumbnail mt-3" />
+          {% endif %}
+        </div>
+        <div class="col-md-7">
+          <div class="card-header bg-primary text-white mt-2">{{ post.title }}</div>
+          <div class="card-body">
+            <h5 class="card-title">By {{ post.author }}</h5>
+            <p class="card-text">
+              {{ post.content|truncatewords:30 }}
+            </p>
+            <p class="card-text">
+              <small class="text-muted">Published on: {{ post.publication_date }}</small><hr class="hr">
+              <small class="text-muted">Categories:
+                {% for category in post.categories.all %}
+                <a href="{% url 'category_posts' category.id %}" class="text-muted">{{ category.name }}</a>
+                {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </small><hr class="hr">
+              <small class="text-muted">Tags:
+                {% for tag in post.tags.all %}
+                <a href="{% url 'tag_posts' tag.id %}" class="text-muted">{{ tag.name }}</a>
+                {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

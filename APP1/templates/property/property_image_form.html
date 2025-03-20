@@ -1,0 +1,186 @@
+{% extends 'base_header.html' %}
+
+{% block title %}
+    {% if form.instance.id %}Edit{% else %}Add{% endif %} Image | {{ property.name }} | Property Management System
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{% if form.instance.id %}Edit{% else %}Add{% endif %} Property Image</h1>
+        <p class="lead">For property: <a href="{% url 'rental_property_detail' property.id %}">{{ property.name }}</a></p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'rental_property_detail' property.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Property
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">{% if form.instance.id %}Edit{% else %}Upload{% endif %} Image</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.instance.id %}
+                    <div class="mb-4 text-center">
+                        <img src="{{ form.instance.image.url }}" alt="{{ form.instance.alt_text|default:'' }}" 
+                             class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.image.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.title.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">{{ form.category.label }}</label>
+                            {{ form.category }}
+                            {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.category.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.alt_text.id_for_label }}" class="form-label">
+                            {{ form.alt_text.label }}
+                            <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="{{ form.alt_text.help_text }}"></i>
+                        </label>
+                        {{ form.alt_text }}
+                        {% if form.alt_text.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.alt_text.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check mt-2">
+                                {{ form.is_primary }}
+                                <label class="form-check-label" for="{{ form.is_primary.id_for_label }}">
+                                    {{ form.is_primary.label }}
+                                    <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="{{ form.is_primary.help_text }}"></i>
+                                </label>
+                                {% if form.is_primary.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.is_primary.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.display_order.id_for_label }}" class="form-label">
+                                {{ form.display_order.label }}
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="{{ form.display_order.help_text }}"></i>
+                            </label>
+                            {{ form.display_order }}
+                            {% if form.display_order.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.display_order.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'rental_property_detail' property.id %}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if form.instance.id %}Update{% else %}Upload{% endif %} Image
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+    
+    // Preview uploaded image
+    document.getElementById('id_image').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const preview = document.createElement('div');
+                preview.classList.add('mb-4', 'text-center');
+                preview.innerHTML = `
+                    <img src="${e.target.result}" alt="Image Preview" 
+                         class="img-fluid rounded" style="max-height: 300px;">
+                    <p class="mt-2 text-muted">Preview (not saved yet)</p>
+                `;
+                
+                // Remove any existing preview
+                const existingPreview = document.querySelector('.card-body > .mb-4.text-center');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Add the new preview at the beginning of the form
+                const form = document.querySelector('form');
+                form.insertBefore(preview, form.firstChild);
+            }
+            
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+</script>

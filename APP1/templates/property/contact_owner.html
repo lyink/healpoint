@@ -1,0 +1,128 @@
+{% extends "base_header.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0"><i class="fas fa-envelope me-2"></i>Contact Property Owner</h4>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-md-5">
+                            <div class="property-summary p-3 bg-light rounded">
+                                <h5 class="mb-3">Property Details</h5>
+                                
+                                <div class="d-flex mb-3">
+                                    {% with primary_image=property.get_primary_image %}
+                                    {% if primary_image %}
+                                    <div class="flex-shrink-0 me-3">
+                                        <img src="{{ primary_image.image.url }}" 
+                                             alt="{{ primary_image.alt_text|default:property.name }}" 
+                                             class="rounded shadow-sm" 
+                                             style="width: 100px; height: 75px; object-fit: cover;">
+                                    </div>
+                                    {% else %}
+                                    <div class="flex-shrink-0 me-3 bg-white text-center rounded shadow-sm" 
+                                         style="width: 100px; height: 75px;">
+                                        <i class="fas fa-home text-muted" 
+                                           style="line-height: 75px; font-size: 2rem;"></i>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                    
+                                    <div>
+                                        <h6 class="mb-0">{{ property.name }}</h6>
+                                        <span class="badge bg-info text-dark">{{ property.property_type.name }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    {{ property.city }}, {{ property.state }}
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <i class="fas fa-door-open text-secondary me-2"></i>
+                                    {{ property.number_of_rooms }} Room{{ property.number_of_rooms|pluralize }}
+                                </div>
+                                
+                                <div class="fw-bold text-primary">
+                                    ${{ property.monthly_rent|floatformat:2 }}
+                                    <small class="fw-normal text-muted">per month</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-7">
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">Your Name</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.name.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.email.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label">Phone Number (Optional)</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.phone.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="{{ form.message.id_for_label }}" class="form-label">Your Message</label>
+                                    {{ form.message }}
+                                    {% if form.message.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.message.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                                    </button>
+                                    <a href="{% url 'property_detail' property.id %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Property
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/css/lightbox.min.css">
+<style>
+    .property-image {
+        height: 200px;
+        object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .property-image:hover {
+        transform: scale(1.03);
+    }
+    .property-info-item {
+        margin-bottom: 0.75rem;
+    }
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-gap: 15px;
+        margin-top: 20px;
+    }
+    .gallery-thumbnail {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+        border-radius: 5px;
+        transition: transform 0.2s;
+    }
+    .gallery-thumbnail:hover {
+        transform: scale(1.05);
+    }
+    .category-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'property_list' %}">Properties</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ property.name }}</li>
+        </ol>
+    </nav>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Property Main Image and Carousel -->
+            {% with all_images=property.images.all %}
+            {% if all_images %}
+            <div id="propertyCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    {% for image in all_images %}
+                    <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                            {% if forloop.first %}class="active" aria-current="true"{% endif %} 
+                            aria-label="Slide {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
+                <div class="carousel-inner rounded">
+                    {% for image in all_images %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height: 400px;">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.alt_text|default:property.name }}" 
+                             style="height: 400px; object-fit: cover;">
+                        {% if image.title %}
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5>{{ image.title }}</h5>
+                            {% if image.description %}
+                            <p>{{ image.description }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            {% else %}
+            <div class="mb-4 rounded bg-light text-center p-5" style="height: 400px;">
+                <i class="fas fa-home fa-5x text-muted mt-5"></i>
+                <p class="text-muted mt-3">No images available for this property</p>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Property Description -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Property Details</h5>
+                    <span class="badge bg-{{ property.status|yesno:'success,danger,warning' }}">
+                        {{ property.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{ property.name }}</h3>
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-map-marker-alt me-2"></i>{{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+                        {% if property.get_google_maps_url %}
+                        <a href="{{ property.get_google_maps_url }}" target="_blank" class="ms-2">
+                            <i class="fas fa-external-link-alt"></i> View on Map
+                        </a>
+                        {% endif %}
+                    </p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="property-info-item">
+                                <strong><i class="fas fa-home me-2"></i>Property Type:</strong> {{ property.property_type.name }}
+                            </div>
+                            <div class="property-info-item">
+                                <strong><i class="fas fa-door-open me-2"></i>Rooms:</strong> {{ property.number_of_rooms }}
+                            </div>
+                            <div class="property-info-item">
+                                <strong><i class="fas fa-money-bill-wave me-2"></i>Monthly Rent:</strong> ${{ property.monthly_rent|floatformat:2 }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="property-info-item">
+                                <strong><i class="fas fa-layer-group me-2"></i>Location:</strong>
+                            </div>
+                            <div class="ms-4">
+                                {% if property.ward %}
+                                <div>Ward: 
+                                    {% if property.ward.name|default:'' %}
+                                        {{ property.ward.name }}
+                                    {% elif property.ward.ward_name|default:'' %}
+                                        {{ property.ward.ward_name }}
+                                    {% elif property.ward.title|default:'' %}
+                                        {{ property.ward.title }}
+                                    {% else %}
+                                        {{ property.ward }}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                {% if property.district %}
+                                <div>District: 
+                                    {% if property.district.name|default:'' %}
+                                        {{ property.district.name }}
+                                    {% elif property.district.district_name|default:'' %}
+                                        {{ property.district.district_name }}
+                                    {% elif property.district.title|default:'' %}
+                                        {{ property.district.title }}
+                                    {% else %}
+                                        {{ property.district }}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                {% if property.region %}
+                                <div>Region: 
+                                    {% if property.region.name|default:'' %}
+                                        {{ property.region.name }}
+                                    {% elif property.region.region_name|default:'' %}
+                                        {{ property.region.region_name }}
+                                    {% elif property.region.title|default:'' %}
+                                        {{ property.region.title }}
+                                    {% else %}
+                                        {{ property.region }}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if property.property_type.description %}
+                    <div class="mb-4">
+                        <h5>About this {{ property.property_type.name }}</h5>
+                        <p>{{ property.property_type.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Image Gallery -->
+            {% with images=property.images.all %}
+            {% if images %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Property Images</h5>
+                </div>
+                <div class="card-body">
+                    <div class="image-gallery">
+                        {% for image in images %}
+                        <div class="position-relative">
+                            <a href="{{ image.image.url }}" data-lightbox="property-gallery" data-title="{{ image.title }}" data-alt="{{ image.alt_text }}">
+                                <img src="{{ image.image.url }}" class="gallery-thumbnail" alt="{{ image.alt_text|default:property.name }}">
+                            </a>
+                            {% if image.category %}
+                            <span class="badge bg-info text-dark category-badge">{{ image.get_category_display }}</span>
+                            {% endif %}
+                            {% if image.is_primary %}
+                            <span class="badge bg-success position-absolute" style="bottom: 10px; right: 10px;">
+                                Primary
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Contact and Booking Information -->
+            <div class="card mb-4 sticky-top" style="top: 20px; z-index: 10;">
+                <div class="card-header">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong><i class="fas fa-user me-2"></i>Owner:</strong> {{ property.owner.get_full_name|default:property.owner.username }}</p>
+                    {% if property.owner.email %}
+                    <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong> {{ property.owner.email }}</p>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'contact_owner' property.id %}" class="btn btn-primary">
+                            <i class="fas fa-envelope me-2"></i>Contact About This Property
+                        </a>
+                        {% if user.is_authenticated and user.is_staff %}
+                        <a href="{% url 'property_images' property.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-images me-2"></i>Manage Images
+                        </a>
+                        <a href="{% url 'edit_property' property.id %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-edit me-2"></i>Edit Property
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Property Status Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Availability Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-{{ property.status|yesno:'success,danger,warning' }} text-white p-3" 
+                                 style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                                {% if property.status == 'available' %}
+                                <i class="fas fa-check-circle fa-2x"></i>
+                                {% elif property.status == 'occupied' %}
+                                <i class="fas fa-user-lock fa-2x"></i>
+                                {% else %}
+                                <i class="fas fa-tools fa-2x"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-0">{{ property.get_status_display }}</h5>
+                            <p class="text-muted mb-0">
+                                {% if property.status == 'available' %}
+                                This property is ready for new tenants!
+                                {% elif property.status == 'occupied' %}
+                                This property currently has tenants.
+                                {% else %}
+                                This property is undergoing maintenance.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if property.status == 'available' %}
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'book_property' property.id %}" class="btn btn-success">
+                            <i class="fas fa-calendar-check me-2"></i>Book This Property
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.3/dist/js/lightbox.min.js"></script>
+<script>
+    // Initialize lightbox
+    lightbox.option({
+        'resizeDuration': 200,
+        'wrapAround': true,
+        'albumLabel': 'Image %1 of %2'
+    });
+</script>
+{% endblock %}

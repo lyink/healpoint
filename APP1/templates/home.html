@@ -1,0 +1,1651 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<!-- Custom CSS -->
+<style>
+    :root {
+        --primary: #2c3e50;
+        --secondary: #34495e;
+        --accent: #3498db;
+        --accent-light: #5dade2;
+        --accent-dark: #2980b9;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --info: #3498db;
+        --light: #f8f9fa;
+        --dark: #343a40;
+        --body-bg: #f5f7fa;
+        --card-bg: #ffffff;
+        --text-primary: #2c3e50;
+        --text-secondary: #7f8c8d;
+        --text-light: #bdc3c7;
+        
+        /* Modern UI Enhancement */
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        
+        /* Enhanced Drop Shadows */
+        --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+        --shadow-hover: 0 15px 35px rgba(52, 152, 219, 0.15);
+        
+        /* Refined Border Radius */
+        --border-radius: 12px;
+        --border-radius-lg: 16px;
+        --border-radius-sm: 8px;
+        --border-radius-xl: 24px;
+        --transition: all 0.3s ease;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    .section-spacing {
+        padding: 80px 0;
+    }
+
+    .section-title-container {
+        margin-bottom: 60px;
+    }
+
+    .section-title {
+        position: relative;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 15px;
+        text-align: center;
+        letter-spacing: -0.5px;
+    }
+
+    .section-subtitle {
+        color: var(--text-secondary);
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 20px;
+        font-weight: 300;
+    }
+
+    .section-divider {
+        width: 70px;
+        height: 3px;
+        background: var(--accent);
+        margin: 0 auto 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .section-divider::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+        animation: shimmer 2.5s infinite;
+    }
+
+    @keyframes shimmer {
+        100% {
+            left: 100%;
+        }
+    }
+
+    /* Cards & Property Items */
+    .property-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease;
+        background-color: var(--card-bg);
+        box-shadow: var(--shadow-md);
+        height: 100%;
+    }
+
+    .property-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .property-image-container {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        border-top-left-radius: var(--border-radius-lg);
+        border-top-right-radius: var(--border-radius-lg);
+    }
+
+    .carousel-inner {
+        height: 250px;
+        border-top-left-radius: var(--border-radius-lg);
+        border-top-right-radius: var(--border-radius-lg);
+    }
+
+    .carousel-item img {
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.8s ease, filter 0.8s ease;
+    }
+
+    .property-card:hover .carousel-item.active img {
+        transform: scale(1.08);
+        filter: brightness(1.05);
+    }
+
+    .property-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 5;
+    }
+
+    .badge {
+        padding: 8px 16px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge.bg-primary {
+        background-color: var(--accent) !important;
+    }
+
+    .badge.bg-info {
+        background-color: var(--info) !important;
+    }
+
+    .badge.bg-danger {
+        background-color: var(--danger) !important;
+    }
+
+    .image-counter {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        z-index: 5;
+    }
+
+    .fullscreen-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 5;
+    }
+
+    .fullscreen-button .btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: var(--primary);
+        opacity: 0;
+        transition: var(--transition);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .property-card:hover .fullscreen-button .btn {
+        opacity: 1;
+    }
+
+    /* Custom Carousel Controls */
+    .carousel-control {
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: var(--transition);
+        position: absolute;
+        z-index: 5;
+        background: none;
+        border: none;
+    }
+
+    .carousel-control-prev {
+        left: 15px;
+    }
+
+    .carousel-control-next {
+        right: 15px;
+    }
+
+    .property-card:hover .carousel-control {
+        opacity: 1;
+    }
+
+    .carousel-control-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        transition: var(--transition);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-control:hover .carousel-control-icon {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    /* Thumbnails Navigation */
+    .carousel-thumbnails {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.6);
+        overflow-x: auto;
+        white-space: nowrap;
+        z-index: 5;
+        scrollbar-width: none;
+    }
+
+    .carousel-thumbnails::-webkit-scrollbar {
+        display: none;
+    }
+
+    .thumbnail-track {
+        display: flex;
+        padding: 5px;
+    }
+
+    .thumbnail-item {
+        width: 60px;
+        height: 40px;
+        margin-right: 5px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: var(--transition);
+        border: 2px solid transparent;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .thumbnail-item:last-child {
+        margin-right: 0;
+    }
+
+    .thumbnail-item.active {
+        opacity: 1;
+        border-color: white;
+    }
+
+    .thumbnail-item:hover {
+        opacity: 0.9;
+    }
+
+    .thumbnail-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.15rem;
+        letter-spacing: -0.3px;
+    }
+
+    .property-location {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .property-location i {
+        margin-right: 6px;
+        color: var(--accent);
+    }
+
+    .property-features {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .property-feature {
+        display: flex;
+        align-items: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .property-feature i {
+        margin-right: 6px;
+        color: var(--accent);
+        padding: 8px;
+        border-radius: 50%;
+        background-color: rgba(52, 152, 219, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .property-card:hover .property-feature i {
+        background-color: var(--accent);
+        color: white;
+    }
+
+    .price-tag {
+        font-weight: 700;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.2rem;
+    }
+
+    /* Buttons */
+    .btn {
+        position: relative;
+        overflow: hidden;
+        font-weight: 600;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        padding: 12px 28px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+        z-index: 0;
+    }
+
+    .btn:hover::before {
+        width: 300%;
+        height: 300%;
+    }
+
+    .btn span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-primary {
+        background-image: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        border: none;
+        padding: 10px 20px;
+        font-weight: 500;
+        border-radius: 50px;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-primary:hover {
+        background-image: linear-gradient(135deg, var(--accent-dark), var(--accent));
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(52, 152, 219, 0.4);
+    }
+
+    .btn-outline-primary {
+        color: var(--accent);
+        border-color: var(--accent);
+        border-radius: 50px;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--accent);
+        color: white;
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+    }
+
+    /* Property Types */
+    .property-type-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease;
+        box-shadow: var(--shadow-md);
+        height: 100%;
+    }
+
+    .property-type-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .type-image-container {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+
+    .type-image-container img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .property-type-card:hover .type-image-container img {
+        transform: scale(1.05);
+    }
+
+    .type-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+
+    .property-type-card:hover .type-overlay {
+        background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8));
+    }
+
+    /* Feature Boxes */
+    .feature-container {
+        margin-bottom: 40px;
+    }
+
+    .feature-box {
+        padding: 35px;
+        border-radius: var(--border-radius-lg);
+        background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+        box-shadow: var(--shadow-md);
+        height: 100%;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    box-shadow 0.5s ease;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .feature-box:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .feature-box::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background-color: var(--accent);
+        transition: var(--transition);
+        z-index: -1;
+        border-radius: 0 0 5px 5px;
+    }
+
+    .feature-box:hover::before {
+        height: 100%;
+        opacity: 0.05;
+    }
+
+    .icon-box {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    background-color 0.3s ease;
+        background-color: rgba(52, 152, 219, 0.1);
+    }
+
+    .feature-box:hover .icon-box {
+        transform: rotateY(180deg) scale(1.1);
+        background-color: rgba(52, 152, 219, 0.15);
+    }
+
+    .feature-box:hover .icon-box i {
+        transform: rotateY(180deg);
+        color: var(--accent-dark);
+    }
+
+    .icon-box i {
+        transition: var(--transition);
+        color: var(--accent);
+    }
+
+    .feature-box h4 {
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .feature-box p {
+        color: var(--text-secondary);
+        margin-bottom: 0;
+    }
+
+    /* Team Section */
+    .team-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        background-color: var(--card-bg);
+        box-shadow: var(--shadow-md);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease;
+        height: 100%;
+        text-align: center;
+    }
+
+    .team-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .team-img-container {
+        padding: 30px 0 15px;
+        position: relative;
+    }
+
+    .team-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid rgba(52, 152, 219, 0.1);
+        transition: var(--transition);
+    }
+
+    .team-card:hover .team-img {
+        border-color: var(--accent-light);
+    }
+
+    .team-card .card-body {
+        padding: 20px;
+    }
+
+    .team-card .card-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .team-role {
+        color: var(--accent);
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .social-links .btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 5px;
+        transition: var(--transition);
+    }
+
+    .social-links .btn:hover {
+        transform: translateY(-3px);
+    }
+
+    /* Testimonials */
+    .testimonial-card {
+        border: none;
+        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, #ffffff, #f8f9fa);
+        box-shadow: var(--shadow-md);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    box-shadow 0.4s ease;
+        height: 100%;
+        padding: 35px;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .testimonial-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 4px solid rgba(52, 152, 219, 0.15);
+    }
+
+    .testimonial-author h5 {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    .testimonial-property {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .testimonial-text {
+        position: relative;
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    .testimonial-text .quote-icon {
+        color: var(--accent);
+        opacity: 0.2;
+        font-size: 1.2rem;
+    }
+
+    .testimonial-rating {
+        color: var(--warning);
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, var(--primary), var(--accent-dark));
+        color: white;
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--border-radius-xl);
+        margin: 0 20px 60px;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('{% static "img/pattern.png" %}');
+        opacity: 0.05;
+        z-index: 0;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-title {
+        font-weight: 700;
+        margin-bottom: 20px;
+        font-size: 2.5rem;
+    }
+
+    .cta-text {
+        margin-bottom: 30px;
+        font-weight: 300;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .btn-light {
+        background-color: white;
+        color: var(--primary);
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    .btn-light:hover {
+        background-color: white;
+        color: var(--accent);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-outline-light {
+        color: white;
+        border-color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    .btn-outline-light:hover {
+        background-color: white;
+        color: var(--accent);
+        border-color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Hero Section Enhancement */
+    .hero-banner {
+        border-bottom-left-radius: var(--border-radius-xl);
+        border-bottom-right-radius: var(--border-radius-xl);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(0,0,0,0), rgba(0,0,0,0.2));
+        animation: pulse 15s infinite alternate;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 0.3; }
+        50% { opacity: 0.7; }
+        100% { opacity: 0.3; }
+    }
+
+    /* Counter value animation */
+    .counter-value {
+        transition: color 0.3s ease;
+    }
+
+    .counter-item:hover .counter-value {
+        color: var(--accent-light);
+    }
+
+    /* Glass Morphism Effects */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+    }
+
+    /* Animation Classes */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered Animation for Lists */
+    .stagger-animation > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .stagger-animation.visible > *:nth-child(1) { transition-delay: 0.1s; }
+    .stagger-animation.visible > *:nth-child(2) { transition-delay: 0.2s; }
+    .stagger-animation.visible > *:nth-child(3) { transition-delay: 0.3s; }
+    .stagger-animation.visible > *:nth-child(4) { transition-delay: 0.4s; }
+    .stagger-animation.visible > *:nth-child(5) { transition-delay: 0.5s; }
+    .stagger-animation.visible > *:nth-child(6) { transition-delay: 0.6s; }
+
+    .stagger-animation.visible > * {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .page-transition {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Responsive fixes */
+    @media (max-width: 767px) {
+        .section-spacing {
+            padding: 50px 0;
+        }
+        
+        .section-title-container {
+            margin-bottom: 40px;
+        }
+        
+        .cta-title {
+            font-size: 2rem;
+        }
+        
+        .property-image-container,
+        .carousel-inner,
+        .carousel-item img {
+            height: 220px;
+        }
+
+        .cta-section {
+            margin: 0 10px 40px;
+            border-radius: var(--border-radius-lg);
+        }
+        
+        .hero-banner {
+            border-bottom-left-radius: var(--border-radius-lg);
+            border-bottom-right-radius: var(--border-radius-lg);
+        }
+        
+        .feature-box, .testimonial-card {
+            padding: 25px;
+        }
+    }
+</style>
+
+<!-- Hero Banner Section -->
+<section class="hero-banner page-transition" style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% static 'img/hero-bg.jpg' %}') no-repeat center center; background-size: cover; height: 500px; display: flex; align-items: center; position: relative;">
+    <div class="container text-center text-white">
+        <h1 class="display-4 fw-bold mb-3 animate-on-scroll" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Find Your Perfect Rental Home</h1>
+        <p class="lead mb-4 animate-on-scroll" style="max-width: 700px; margin: 0 auto; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Browse our curated selection of high-quality rental properties in the most desirable locations</p>
+        <div class="mt-4 animate-on-scroll">
+            <a href="{% url 'property_list' %}" class="btn btn-light btn-lg px-4 me-2"><span>Browse Properties</span></a>
+            <a href="#" class="btn btn-outline-light btn-lg px-4"><span>Contact Us</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- Property Search Form -->
+<section class="search-section py-5 bg-white">
+    <div class="container">
+        <div class="card border-0 rounded-lg glass-card animate-on-scroll" style="margin-top: -80px; position: relative; z-index: 10;">
+            <div class="card-body p-4">
+                <h4 class="text-center mb-4">Find Your Dream Rental</h4>
+                <form action="{% url 'property_list' %}" method="get">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="location" class="form-label">Location</label>
+                                <select name="location" id="location" class="form-select">
+                                    <option value="">All Locations</option>
+                                    <option value="new-york">New York</option>
+                                    <option value="los-angeles">Los Angeles</option>
+                                    <option value="chicago">Chicago</option>
+                                    <option value="houston">Houston</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="property_type" class="form-label">Property Type</label>
+                                <select name="property_type" id="property_type" class="form-select">
+                                    <option value="">All Types</option>
+                                    {% for type in property_types %}
+                                    <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="price_range" class="form-label">Price Range</label>
+                                <select name="price_range" id="price_range" class="form-select">
+                                    <option value="">Any Price</option>
+                                    <option value="0-1000">$0 - $1,000</option>
+                                    <option value="1000-2000">$1,000 - $2,000</option>
+                                    <option value="2000-3000">$2,000 - $3,000</option>
+                                    <option value="3000+">$3,000+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center mt-4">
+                            <button type="submit" class="btn btn-primary px-5"><span>Search Properties</span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Properties Section -->
+<section class="featured-properties section-spacing">
+    <div class="container">
+        <div class="section-title-container animate-on-scroll">
+            <h2 class="section-title">Featured Properties</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">Discover our most popular rental homes available right now</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 stagger-animation">
+            {% for property in featured_properties %}
+            <div class="col">
+                <div class="property-card">
+                    <div class="property-image-container">
+                        {% with images=property.images.all %}
+                        {% if images.exists %}
+                        <div id="propertyCarousel{{ property.id }}" class="carousel slide" data-bs-ride="false" data-bs-touch="true" data-bs-interval="false">
+                            <!-- Property Badge -->
+                            <div class="property-badge">
+                                {% if forloop.first %}
+                                <span class="badge bg-primary">Featured</span>
+                                {% elif forloop.counter == 2 %}
+                                <span class="badge bg-info">New</span>
+                                {% else %}
+                                <span class="badge bg-danger">Nice</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Fullscreen View Button -->
+                            <div class="fullscreen-button">
+                                <a href="{% url 'property_detail' property.id %}#gallery" class="btn btn-sm rounded-circle">
+                                    <i class="fas fa-expand-alt"></i>
+                                </a>
+                            </div>
+                            
+                            <!-- Image Counter Badge -->
+                            <div class="image-counter">
+                                <span class="badge bg-dark rounded-pill px-3 py-1">
+                                    <i class="fas fa-images me-1"></i> <span id="currentSlide{{ property.id }}">1</span>/{{ images.count }}
+                                </span>
+                            </div>
+                            
+                            <!-- Carousel Items -->
+                            <div class="carousel-inner">
+                                {% for image in images %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}" data-slide-number="{{ forloop.counter }}">
+                                    <img src="{{ image.image.url }}" class="d-block w-100" 
+                                         alt="{{ image.alt_text|default:property.name }}">
+                                    {% if image.title or image.description %}
+                                    <div class="carousel-caption d-none d-md-block">
+                                        {% if image.title %}<h6>{{ image.title }}</h6>{% endif %}
+                                        {% if image.description %}<p class="small">{{ image.description|truncatechars:50 }}</p>{% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Carousel Controls -->
+                            <button class="carousel-control carousel-control-prev" type="button" 
+                                    data-bs-target="#propertyCarousel{{ property.id }}" data-bs-slide="prev">
+                                <span class="carousel-control-icon">
+                                    <i class="fas fa-chevron-left"></i>
+                                </span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control carousel-control-next" type="button" 
+                                    data-bs-target="#propertyCarousel{{ property.id }}" data-bs-slide="next">
+                                <span class="carousel-control-icon">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            
+                            <!-- Thumbnail Navigation -->
+                            {% if images.count > 1 %}
+                            <div class="carousel-thumbnails">
+                                <div class="thumbnail-track">
+                                    {% for image in images %}
+                                    <div class="thumbnail-item {% if forloop.first %}active{% endif %}" 
+                                         data-bs-target="#propertyCarousel{{ property.id }}" 
+                                         data-bs-slide-to="{{ forloop.counter0 }}">
+                                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:'Thumbnail' }}">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="property-image-container bg-light d-flex align-items-center justify-content-center rounded-top">
+                            <i class="fas fa-home fa-4x text-muted"></i>
+                            <div class="property-badge">
+                                {% if forloop.first %}
+                                <span class="badge bg-primary">Featured</span>
+                                {% elif forloop.counter == 2 %}
+                                <span class="badge bg-info">New</span>
+                                {% else %}
+                                <span class="badge bg-danger">Hot</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-{{ property.status|slugify }} py-2 px-3">
+                                {{ property.get_status_display }}
+                            </span>
+                            <div class="price-tag">${{ property.monthly_rent|floatformat:0 }}/mo</div>
+                        </div>
+                        
+                        <h5 class="card-title">{{ property.name }}</h5>
+                        
+                        <div class="property-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ property.city }}, {{ property.state }}</span>
+                        </div>
+                        
+                        <div class="property-features">
+                            <div class="property-feature">
+                                <i class="fas fa-door-open"></i>
+                                <span>{{ property.number_of_rooms }} Room{{ property.number_of_rooms|pluralize }}</span>
+                            </div>
+                            <div class="property-feature">
+                                <i class="fas fa-bath"></i>
+                                <span>{{ property.bathrooms }} Bath{{ property.bathrooms|pluralize }}</span>
+                            </div>
+                            <div class="property-feature">
+                                <i class="fas fa-vector-square"></i>
+                                <span>{{ property.square_feet }} sq ft</span>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'property_detail_home' property.id %}" class="btn btn-primary w-100"><span>View Details</span></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    No featured properties available at the moment. Check back soon!
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5 animate-on-scroll">
+            <a href="{% url 'property_list_home' %}" class="btn btn-outline-primary px-4 py-2"><span>View All Properties</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- Property Types Section -->
+<section class="property-types section-spacing bg-light">
+    <div class="container">
+        <div class="section-title-container animate-on-scroll">
+            <h2 class="section-title">Explore Property Types</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">Find the perfect space that fits your lifestyle</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 stagger-animation">
+            {% for property_type in property_types %}
+            <div class="col">
+                <div class="property-type-card">
+                    <div class="type-image-container">
+                        <!-- Try to find an image for each property type by looking at the first property -->
+                        {% with type_property=property_type.rentalproperty_set.filter.first %}
+                        {% if type_property and type_property.get_primary_image %}
+                            <img src="{{ type_property.get_primary_image.image.url }}" 
+                                 alt="{{ property_type.name }}" />
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center h-100">
+                                <i class="fas fa-building fa-4x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                        <div class="type-overlay">
+                            <h3 class="text-white mb-0">{{ property_type.name }}</h3>
+                        </div>
+                    </div>
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ property_type.name }}</h5>
+                        {% if property_type.description %}
+                        <p class="card-text small text-muted mb-3">{{ property_type.description|truncatechars:60 }}</p>
+                        {% endif %}
+                        <p class="text-accent fw-bold mb-3">
+                            <span class="badge bg-primary">{{ property_type.available_count }} Available</span>
+                        </p>
+                        <a href="{% url 'properties_list_out' %}?property_type={{ property_type.id }}" 
+                           class="btn btn-outline-primary btn-sm w-100"><span>Browse {{ property_type.name }}</span></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    No property types available. Please check back later.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Counter Section -->
+<section class="counter-section py-5" style="background: linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)), url('{% static 'img/counter-bg.jpg' %}') no-repeat center center; background-size: cover;">
+    <div class="container py-4">
+        <div class="row text-center text-white stagger-animation">
+            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                <div class="counter-item">
+                    <i class="fas fa-home fa-3x mb-3"></i>
+                    <h2 class="counter-value fw-bold">250+</h2>
+                    <p class="counter-title">Rental Properties</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                <div class="counter-item">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h2 class="counter-value fw-bold">1,500+</h2>
+                    <p class="counter-title">Happy Tenants</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="counter-item">
+                    <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+                    <h2 class="counter-value fw-bold">30+</h2>
+                    <p class="counter-title">Cities Covered</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="counter-item">
+                    <i class="fas fa-award fa-3x mb-3"></i>
+                    <h2 class="counter-value fw-bold">98%</h2>
+                    <p class="counter-title">Satisfaction Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us section-spacing bg-white">
+    <div class="container">
+        <div class="section-title-container animate-on-scroll">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">Experience the difference with our premium rental services</p>
+        </div>
+
+        <div class="row g-4 stagger-animation">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-primary-light">
+                        <i class="fas fa-search fa-2x"></i>
+                    </div>
+                    <h4>Easy Property Search</h4>
+                    <p>Our intuitive search tools help you find exactly what you're looking for based on your preferences.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-success-light">
+                        <i class="fas fa-lock fa-2x"></i>
+                    </div>
+                    <h4>Secure Transactions</h4>
+                    <p>Your payments and personal information are always protected with our secure systems.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-info-light">
+                        <i class="fas fa-star fa-2x"></i>
+                    </div>
+                    <h4>Quality Guaranteed</h4>
+                    <p>All our properties are verified and maintained to the highest standards for your comfort.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-warning-light">
+                        <i class="fas fa-headset fa-2x"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Our dedicated team is always available to assist you with any questions or concerns.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-danger-light">
+                        <i class="fas fa-file-contract fa-2x"></i>
+                    </div>
+                    <h4>Transparent Contracts</h4>
+                    <p>No hidden fees or confusing terms - we believe in complete transparency in all our dealings.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="icon-box bg-secondary-light">
+                        <i class="fas fa-hand-holding-heart fa-2x"></i>
+                    </div>
+                    <h4>Personalized Service</h4>
+                    <p>We take the time to understand your needs and provide tailored solutions just for you.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section section-spacing bg-light">
+    <div class="container">
+        <div class="section-title-container animate-on-scroll">
+            <h2 class="section-title">Meet Our Team</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">The professionals who will help you find your perfect home</p>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4 stagger-animation">
+            {% for member in team_members %}
+            <div class="col">
+                <div class="team-card">
+                    <div class="team-img-container">
+                        {% if member.image %}
+                            <img class="team-img" src="{{ member.image.url }}" alt="{{ member.name }}" />
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                                style="width: 150px; height: 150px;">
+                                <i class="fas fa-user fa-4x text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ member.name }}</h5>
+                        <p class="team-role">{{ member.role }}</p>
+                        <div class="social-links">
+                            {% if member.linkedin %}
+                                <a href="{{ member.linkedin }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                            {% endif %}
+                            {% if member.twitter %}
+                                <a href="{{ member.twitter }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            {% endif %}
+                            {% if member.facebook %}
+                                <a href="{{ member.facebook }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p>Our team information is coming soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section section-spacing bg-white">
+    <div class="container">
+        <div class="section-title-container animate-on-scroll">
+            <h2 class="section-title">What Our Clients Say</h2>
+            <div class="section-divider"></div>
+            <p class="section-subtitle">Hear from people who have found their perfect homes with us</p>
+        </div>
+        
+        <div class="row g-4 stagger-animation">
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="{% static 'img/client1.jpg' %}" alt="Client" class="testimonial-img">
+                        <div class="testimonial-author">
+                            <h5>Robert Wilson</h5>
+                            <div class="testimonial-property">Downtown Apartment</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-text">
+                        <i class="fas fa-quote-left quote-icon me-2"></i>
+                        Finding my new apartment was incredibly easy with this rental service. The team was responsive and helped me find exactly what I was looking for within my budget.
+                        <i class="fas fa-quote-right quote-icon ms-2"></i>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="{% static 'img/client2.jpg' %}" alt="Client" class="testimonial-img">
+                        <div class="testimonial-author">
+                            <h5>Amanda Garcia</h5>
+                            <div class="testimonial-property">Family Home</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-text">
+                        <i class="fas fa-quote-left quote-icon me-2"></i>
+                        We needed a larger home for our growing family and couldn't be happier with our rental. The process was smooth and the property is exactly as advertised.
+                        <i class="fas fa-quote-right quote-icon ms-2"></i>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img src="{% static 'img/client3.jpg' %}" alt="Client" class="testimonial-img">
+                        <div class="testimonial-author">
+                            <h5>David Chen</h5>
+                            <div class="testimonial-property">Luxury Condo</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-text">
+                        <i class="fas fa-quote-left quote-icon me-2"></i>
+                        I've rented properties before, but this experience was by far the best. The maintenance team is responsive and the management truly cares about tenant satisfaction.
+                        <i class="fas fa-quote-right quote-icon ms-2"></i>
+                    </div>
+                    <div class="testimonial-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content text-center animate-on-scroll">
+            <h2 class="cta-title">Ready to Find Your Dream Home?</h2>
+            <p class="cta-text">Join thousands of satisfied tenants who found their perfect rental property with us</p>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <a href="{% url 'property_list' %}" class="btn btn-light btn-lg w-100 mb-3 mb-md-0"><span>Search Properties</span></a>
+                </div>
+                <div class="col-md-5">
+                    <a href="#" class="btn btn-outline-light btn-lg w-100"><span>Contact an Agent</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Live Chat Script -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6794b08b825083258e0af809/1iied38vk';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+
+<!-- Required Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize scroll animations
+    initScrollAnimations();
+    
+    // Initialize property carousels
+    initPropertyCarousels();
+    
+    // Initialize counter animations
+    initCounterAnimations();
+    
+    // Initialize staggered animations
+    initStaggeredAnimations();
+    
+    // Initialize parallax effect
+    initParallax();
+    
+    // Add page transition class to body
+    document.body.classList.add('page-transition');
+});
+
+// Scroll animations
+function initScrollAnimations() {
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                // Unobserve after animation
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    });
+    
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+}
+
+// Initialize staggered animations
+function initStaggeredAnimations() {
+    const staggerContainers = document.querySelectorAll('.stagger-animation');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                // Unobserve after animation
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    });
+    
+    staggerContainers.forEach(container => {
+        observer.observe(container);
+    });
+}
+
+// Property carousels with enhanced interactions
+function initPropertyCarousels() {
+    // For each property carousel
+    document.querySelectorAll('[id^="propertyCarousel"]').forEach(function(carousel) {
+        const propertyId = carousel.id.replace('propertyCarousel', '');
+        const counterEl = document.getElementById('currentSlide' + propertyId);
+        
+        // Update counter on slide change
+        carousel.addEventListener('slide.bs.carousel', function(event) {
+            const slideNumber = event.to + 1;
+            if (counterEl) {
+                counterEl.textContent = slideNumber;
+            }
+            
+            // Update active thumbnail
+            const thumbnails = carousel.querySelectorAll('.thumbnail-item');
+            thumbnails.forEach((thumb, index) => {
+                if (index === event.to) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        });
+        
+        // Enable touch swiping on mobile with better sensitivity
+        const hammer = new Hammer(carousel);
+        hammer.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 5, velocity: 0.3 });
+        
+        hammer.on('swipeleft', function() {
+            new bootstrap.Carousel(carousel).next();
+        });
+        
+        hammer.on('swiperight', function() {
+            new bootstrap.Carousel(carousel).prev();
+        });
+        
+        // Add zoom effect on carousel hover
+        carousel.addEventListener('mouseenter', function() {
+            const activeImg = carousel.querySelector('.carousel-item.active img');
+            if (activeImg) {
+                activeImg.style.transform = 'scale(1.05)';
+            }
+        });
+        
+        carousel.addEventListener('mouseleave', function() {
+            const activeImg = carousel.querySelector('.carousel-item.active img');
+            if (activeImg) {
+                activeImg.style.transform = '';
+            }
+        });
+    });
+}
+
+// Counter animations
+function initCounterAnimations() {
+    const counterSection = document.querySelector('.counter-section');
+    if (!counterSection) return;
+    
+    const counters = counterSection.querySelectorAll('.counter-value');
+    let started = false;
+    
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !started) {
+                started = true;
+                
+                counters.forEach(counter => {
+                    const target = counter.innerText;
+                    const targetNum = parseFloat(target.replace(/\D/g, ''));
+                    let count = 0;
+                    const duration = 2500;
+                    const increment = targetNum / (duration / 30);
+                    
+                    const updateCount = () => {
+                        if (count < targetNum) {
+                            count += increment;
+                            
+                            // Format the displayed value
+                            let displayed;
+                            if (target.includes('%')) {
+                                displayed = Math.min(Math.floor(count), targetNum) + '%';
+                            } else if (target.includes('+')) {
+                                displayed = Math.min(Math.floor(count), targetNum) + '+';
+                            } else {
+                                displayed = Math.min(Math.floor(count), targetNum);
+                            }
+                            
+                            counter.innerText = displayed;
+                            setTimeout(updateCount, 30);
+                        } else {
+                            counter.innerText = target;
+                        }
+                    };
+                    
+                    updateCount();
+                });
+                
+                // Unobserve after animation starts
+                counterObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+    
+    counterObserver.observe(counterSection);
+}
+
+// Initialize parallax effect for hero banner
+function initParallax() {
+    const heroBanner = document.querySelector('.hero-banner');
+    if (!heroBanner) return;
+    
+    window.addEventListener('scroll', function() {
+        const scrollPos = window.scrollY;
+        const scrollFactor = 0.4;
+        
+        if (scrollPos <= window.innerHeight) {
+            heroBanner.style.backgroundPositionY = `calc(50% + ${scrollPos * scrollFactor}px)`;
+        }
+    });
+}
+</script>
+
+{% endblock %}

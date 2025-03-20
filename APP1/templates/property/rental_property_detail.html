@@ -1,0 +1,239 @@
+{% extends 'base_header.html' %}
+{% load static %}
+
+{% block title %}{{ property.name }} | Property Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>{{ property.name }}</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <div class="btn-group" role="group">
+            <a href="{% url 'rental_property_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+            {% if user == property.owner %}
+            <a href="{% url 'rental_property_update' property.id %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'rental_property_delete' property.id %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Property Details Column -->
+    <div class="col-lg-8">
+        <!-- Status Badge -->
+        <div class="mb-4">
+            <span class="badge bg-{% if property.status == 'available' %}success{% elif property.status == 'occupied' %}warning{% else %}danger{% endif %} fs-6">
+                {{ property.get_status_display }}
+            </span>
+            <span class="ms-2 fs-5 fw-bold">${{ property.monthly_rent|floatformat:2 }}/month</span>
+        </div>
+        
+        <!-- Property Images Carousel -->
+        {% if images %}
+        <div id="propertyCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for image in images %}
+                <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                        {% if forloop.first %}class="active"{% endif %}></button>
+                {% endfor %}
+            </div>
+            <div class="carousel-inner rounded">
+                {% for image in images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}" style="height: 400px;">
+                    <a href="{{ image.image.url }}" data-lightbox="property-gallery" data-title="{{ image.title|default:'' }}">
+                        <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.alt_text|default:property.name }}"
+                             style="height: 100%; object-fit: cover;">
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        
+        <!-- Thumbnails -->
+        <div class="row mb-4">
+            {% for image in images %}
+            <div class="col-md-2 col-3 mb-3">
+                <a href="{{ image.image.url }}" data-lightbox="property-thumbs" data-title="{{ image.title|default:'' }}" class="d-block">
+                    <img src="{{ image.image.url }}" class="img-thumbnail" alt="{{ image.alt_text|default:'' }}" 
+                         style="height: 80px; object-fit: cover;">
+                </a>
+                {% if user == property.owner %}
+                <div class="btn-group btn-group-sm w-100 mt-1" role="group">
+                    <a href="{% url 'property_image_update' image.id %}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {% if not image.is_primary %}
+                    <a href="{% url 'property_image_set_primary' image.id %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-star"></i>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'property_image_delete' image.id %}" class="btn btn-outline-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            {% if user == property.owner %}
+            <div class="col-md-2 col-3 mb-3">
+                <a href="{% url 'property_image_create' property.id %}" class="d-block text-center bg-light rounded p-3" style="height: 80px;">
+                    <i class="fas fa-plus fa-2x text-primary" style="line-height: 55px;"></i>
+                </a>
+                <div class="text-center mt-1">
+                    <small>Add Image</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="text-center py-5 bg-light rounded mb-4">
+            <i class="fas fa-image fa-4x text-muted mb-3"></i>
+            <p class="mb-0">No images available for this property.</p>
+            {% if user == property.owner %}
+            <div class="mt-3">
+                <a href="{% url 'property_image_create' property.id %}" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add Images
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <!-- Property Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Property Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Property Type:</strong> {{ property.property_type.name }}</p>
+                        <p><strong>Address:</strong> {{ property.address }}</p>
+                        <p><strong>Location:</strong> {{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+                        <p><strong>Administrative Location:</strong> {{ property.get_location_hierarchy }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Number of Rooms:</strong> {{ property.number_of_rooms }}</p>
+                        <p><strong>Monthly Rent:</strong> ${{ property.monthly_rent|floatformat:2 }}</p>
+                        <p><strong>Status:</strong> {{ property.get_status_display }}</p>
+                        <p><strong>Owner:</strong> {{ property.owner.get_full_name|default:property.owner.username }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar Column -->
+    <div class="col-lg-4">
+        <!-- Google Map -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Location</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if property.latitude and property.longitude %}
+                <div class="ratio ratio-4x3">
+                    <iframe 
+                        src="https://maps.google.com/maps?q={{ property.latitude }},{{ property.longitude }}&z=15&output=embed" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        style="border:0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="p-3">
+                    <a href="{{ property.get_google_maps_url }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                        <i class="fas fa-map-marker-alt"></i> View on Google Maps
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-map-marker-alt fa-3x text-muted mb-3"></i>
+                    <p>No location coordinates available for this property.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Contact Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Contact Information</h5>
+            </div>
+            <div class="card-body">
+                <p><i class="fas fa-user me-2"></i> {{ property.owner.get_full_name|default:property.owner.username }}</p>
+                <p><i class="fas fa-envelope me-2"></i> {{ property.owner.email }}</p>
+                <!-- Add more contact details as needed -->
+                
+                <hr>
+                
+                <div class="d-grid">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactModalLabel">Contact Property Owner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="messageSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="messageSubject" placeholder="Inquiry about {{ property.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageBody" class="form-label">Message</label>
+                        <textarea class="form-control" id="messageBody" rows="5" placeholder="Your message to the property owner..."></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+<script>
+    // Initialize lightbox
+    lightbox.option({
+        'resizeDuration': 200,
+        'wrapAround': true
+    });
+</script>
+{% endblock %}

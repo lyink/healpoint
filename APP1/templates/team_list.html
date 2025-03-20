@@ -1,0 +1,105 @@
+{% extends 'base_header.html' %}
+
+{% block content %}
+<section class="team-section py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="section-title">Our Team</h2>
+            <a href="{% url 'add_team_member' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Add Team Member
+            </a>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% if team_members %}
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 80px;">#</th>
+                                    <th scope="col">Photo</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Social Media</th>
+                                    <th scope="col" class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in team_members %}
+                                    <tr>
+                                        <td class="align-middle">{{ forloop.counter }}</td>
+                                        <td class="align-middle" style="width: 70px;">
+                                            {% if member.image %}
+                                                <img class="rounded-circle" src="{{ member.image.url }}" alt="{{ member.name }}" 
+                                                    style="width: 50px; height: 50px; object-fit: cover;" />
+                                            {% else %}
+                                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                                                    style="width: 50px; height: 50px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="align-middle fw-bold">{{ member.name }}</td>
+                                        <td class="align-middle text-muted">{{ member.role }}</td>
+                                        <td class="align-middle">
+                                            <div class="social-links">
+                                                {% if member.linkedin %}
+                                                    <a href="{{ member.linkedin }}" target="_blank" class="btn btn-outline-primary btn-sm me-1">
+                                                        <i class="fab fa-linkedin"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if member.twitter %}
+                                                    <a href="{{ member.twitter }}" target="_blank" class="btn btn-outline-info btn-sm me-1">
+                                                        <i class="fab fa-twitter"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if member.facebook %}
+                                                    <a href="{{ member.facebook }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                        <i class="fab fa-facebook"></i>
+                                                    </a>
+                                                {% endif %}
+                                                {% if not member.linkedin and not member.twitter and not member.facebook %}
+                                                    <span class="text-muted fst-italic">None</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td class="align-middle text-end">
+                                            <div class="btn-group">
+                                                <a href="{% url 'edit_team_member' member.id %}" class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </a>
+                                                <a href="{% url 'delete_team_member' member.id %}" class="btn btn-sm btn-outline-danger"
+                                                   onclick="return confirm('Are you sure you want to delete {{ member.name }}?');">
+                                                    <i class="fas fa-trash-alt me-1"></i>Delete
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-light py-2">
+                    <small class="text-muted">Total team members: {{ team_members|length }}</small>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No team members found. 
+                <a href="{% url 'add_team_member' %}" class="alert-link">Add your first team member</a>.
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

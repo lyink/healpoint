@@ -1,0 +1,702 @@
+{% load static %}
+
+<!-- Sidebar Template - save as sidebar.html in your templates directory -->
+<div class="sidebar" id="sidebar">
+    <div class="logo-container text-center">
+        <a href="/">
+            <img src="{% static 'img/rent.png' %}" alt="RentalHub" height="40">
+        </a>
+    </div>
+    
+    <div class="sidebar-menu-section">
+        <p class="menu-category">Main Navigation</p>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'rental_property_list' %}active{% endif %}" href="{% url 'rental_property_list' %}">
+                    <i class="fas fa-building"></i>
+                    <span>Properties</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'rental_property_create' %}active{% endif %}" href="{% url 'rental_property_create' %}">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Add Property</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'property_type_list' %}active{% endif %}" href="{% url 'property_type_list' %}">
+                    <i class="fas fa-tags"></i>
+                    <span>Property Types</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'location_list' %}active{% endif %}" href="{% url 'location_list' %}">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Locations</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-menu-section">
+        <p class="menu-category">User Management</p>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'user_management' %}active{% endif %}" href="{% url 'user_management' %}">
+                    <i class="fas fa-users"></i>
+                    <span>Manage Users</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'create_user' %}active{% endif %}" href="{% url 'create_user' %}">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Register User</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'add_team_member' %}active{% endif %}" href="{% url 'add_team_member' %}">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Team member</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="sidebar-menu-section">
+        <p class="menu-category">Finance</p>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'payments' %}active{% endif %}" href="{% url 'payments' %}">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Payments</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar-menu-section">
+        <p class="menu-category">System</p>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'settings' %}active{% endif %}" href="{% url 'settings' %}">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {% if active_page == 'support' %}active{% endif %}" href="{% url 'support' %}">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help & Support</span>
+                </a>
+            </li>
+            
+            <li class="nav-item logout-item">
+                <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0; padding:0;">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-link logout-button" style="background:none; border:none; cursor:pointer; width:100%; text-align:left; padding:10px 20px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="user-info">
+        <div class="user-avatar">
+            <div class="user-avatar">
+                {% if user.get_profile_pic_base64 %}
+                <img src="{{ user.get_profile_pic_base64 }}" alt="{{ user.username }}'s profile">
+            {% else %}
+                <img src="/static/default-profile.png" alt="Default profile">
+            {% endif %}
+        
+        </div>
+        </div>
+        <div class="user-details">
+            <p class="user-name">{{ user.get_full_name|default:user.username }}</p>
+            <p class="user-role">{% if user.profile.is_landlord %}Landlord{% elif user.profile.is_agent %}Agent{% else %}Tenant{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Topbar -->
+<div class="topbar" id="topbar">
+    <div class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    
+    <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" placeholder="Search...">
+    </div>
+    
+    <div class="topbar-actions">
+        <div class="icon-button notifications">
+            <i class="fas fa-bell"></i>
+            {% if notification_count > 0 %}
+                <span class="notification-badge">{{ notification_count }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="icon-button">
+            <i class="fas fa-envelope"></i>
+            {% if message_count > 0 %}
+                <span class="notification-badge">{{ message_count }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- CSS for Sidebar and Topbar - Include in your base.html or separate CSS file -->
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3a0ca3;
+        --text-primary: #333;
+        --text-secondary: #666;
+        --text-light: #888;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+        --sidebar-width: 260px;
+        --sidebar-collapsed-width: 70px;
+        --transition-speed: 0.3s;
+        --border-radius: 8px;
+        --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Sidebar */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: var(--sidebar-width);
+        background-color: var(--bg-white);
+        box-shadow: var(--box-shadow);
+        z-index: 1000;
+        transition: all var(--transition-speed) ease;
+        padding-top: 15px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    
+    .sidebar::-webkit-scrollbar {
+        width: 5px;
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    
+    .sidebar .logo-container {
+        padding: 10px 20px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .sidebar-menu-section {
+        padding: 5px 0;
+        margin-bottom: 10px;
+    }
+    
+    .menu-category {
+        font-size: 12px;
+        text-transform: uppercase;
+        color: var(--text-light);
+        margin-bottom: 5px;
+        padding: 0 20px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .sidebar .nav-item {
+        margin-bottom: 3px;
+    }
+    
+    .sidebar .nav-link, .sidebar .logout-button {
+        padding: 10px 20px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        border-radius: 0;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        border-left: 3px solid transparent;
+    }
+    
+    .sidebar .nav-link i, .sidebar .logout-button i {
+        margin-right: 12px;
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .sidebar .nav-link:hover, .sidebar .logout-button:hover {
+        color: var(--primary-color);
+        background-color: rgba(67, 97, 238, 0.05);
+        border-left-color: var(--primary-color);
+    }
+    
+    .sidebar .nav-link.active {
+        color: var(--primary-color);
+        background-color: rgba(67, 97, 238, 0.1);
+        border-left-color: var(--primary-color);
+    }
+    
+    .sidebar .nav-link.active i {
+        color: var(--primary-color);
+    }
+    
+    .logout-item .logout-button {
+        color: #e74c3c !important;
+    }
+    
+    .logout-item .logout-button:hover {
+        background-color: rgba(231, 76, 60, 0.05) !important;
+        border-left-color: #e74c3c !important;
+    }
+    
+    .sidebar .user-info {
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        margin-top: auto;
+        position: fixed;
+        bottom: 0;
+        width: var(--sidebar-width);
+        background-color: var(--bg-white);
+    }
+    
+    .sidebar .user-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 12px;
+        border: 2px solid rgba(67, 97, 238, 0.2);
+        flex-shrink: 0;
+    }
+    
+    .sidebar .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .user-details {
+        overflow: hidden;
+    }
+    
+    .sidebar .user-name {
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--text-primary);
+    }
+    
+    .sidebar .user-role {
+        font-size: 12px;
+        color: var(--text-light);
+        margin-bottom: 0;
+        background-color: rgba(67, 97, 238, 0.1);
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+    
+    /* Topbar */
+    .topbar {
+        position: fixed;
+        top: 0;
+        left: var(--sidebar-width);
+        right: 0;
+        height: 60px;
+        background-color: var(--bg-white);
+        box-shadow: var(--box-shadow);
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 999;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .sidebar-toggle {
+        color: var(--text-secondary);
+        font-size: 18px;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all var(--transition-speed) ease;
+    }
+    
+    .sidebar-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--primary-color);
+    }
+    
+    .topbar .search-box {
+        position: relative;
+        margin-right: auto;
+        margin-left: 15px;
+    }
+    
+    .topbar .search-input {
+        width: 280px;
+        border: none;
+        padding: 10px 15px;
+        padding-left: 40px;
+        border-radius: var(--border-radius);
+        background-color: var(--bg-light);
+        transition: all var(--transition-speed) ease;
+        font-size: 14px;
+    }
+    
+    .topbar .search-input:focus {
+        width: 320px;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+    
+    .topbar .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+    }
+    
+    .topbar-actions {
+        display: flex;
+        align-items: center;
+    }
+    
+    .topbar .notifications {
+        position: relative;
+        margin-right: 15px;
+    }
+    
+    .topbar .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: #ff6b6b;
+        color: #fff;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .topbar .icon-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 16px;
+        cursor: pointer;
+        transition: all var(--transition-speed) ease;
+        position: relative;
+    }
+    
+    .topbar .icon-button:hover {
+        background-color: var(--bg-light);
+        color: var(--primary-color);
+    }
+    
+    /* Main Content Adjustment */
+    .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 75px 25px 25px;
+        transition: all var(--transition-speed) ease;
+        min-height: 100vh;
+        background-color: var(--bg-light);
+    }
+    
+    /* Sidebar Collapsed State */
+    .sidebar.collapsed {
+        width: var(--sidebar-collapsed-width);
+        overflow: visible;
+    }
+    
+    .sidebar.collapsed .menu-category,
+    .sidebar.collapsed .nav-link span,
+    .sidebar.collapsed .logout-button span,
+    .sidebar.collapsed .user-details {
+        display: none;
+    }
+    
+    .sidebar.collapsed .logo-container {
+        padding: 15px 0;
+        text-align: center;
+    }
+    
+    .sidebar.collapsed .nav-link,
+    .sidebar.collapsed .logout-button {
+        padding: 15px 0;
+        justify-content: center;
+    }
+    
+    .sidebar.collapsed .nav-link i,
+    .sidebar.collapsed .logout-button i {
+        margin-right: 0;
+        font-size: 18px;
+    }
+    
+    .sidebar.collapsed .user-info {
+        width: var(--sidebar-collapsed-width);
+        justify-content: center;
+        padding: 15px 0;
+    }
+    
+    .sidebar.collapsed .user-avatar {
+        margin-right: 0;
+    }
+    
+    .topbar.expanded {
+        left: var(--sidebar-collapsed-width);
+    }
+    
+    .main-content.expanded {
+        margin-left: var(--sidebar-collapsed-width);
+    }
+    
+    /* Tooltips for collapsed sidebar */
+    .sidebar.collapsed .nav-link,
+    .sidebar.collapsed .logout-button {
+        position: relative;
+    }
+    
+    .sidebar.collapsed .nav-link::after,
+    .sidebar.collapsed .logout-button::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--text-primary);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        z-index: 1010;
+    }
+    
+    .sidebar.collapsed .nav-link::before,
+    .sidebar.collapsed .logout-button::before {
+        content: "";
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent var(--text-primary) transparent transparent;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        z-index: 1010;
+    }
+    
+    .sidebar.collapsed .nav-link:hover::after,
+    .sidebar.collapsed .nav-link:hover::before,
+    .sidebar.collapsed .logout-button:hover::after,
+    .sidebar.collapsed .logout-button:hover::before {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 991px) {
+        :root {
+            --sidebar-width: 240px;
+        }
+        
+        .sidebar {
+            transform: translateX(-100%);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar.show {
+            transform: translateX(0);
+        }
+        
+        .main-content {
+            margin-left: 0;
+        }
+        
+        .topbar {
+            left: 0;
+        }
+        
+        .topbar .search-input {
+            width: 200px;
+        }
+        
+        .topbar .search-input:focus {
+            width: 240px;
+        }
+    }
+    
+    @media (max-width: 767px) {
+        .topbar .search-input {
+            width: 150px;
+        }
+        
+        .topbar .search-input:focus {
+            width: 180px;
+        }
+    }
+</style>
+
+<script>
+ 
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const topbar = document.getElementById('topbar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        
+        // Find the main content element - look for either id or class
+        const mainContent = document.getElementById('main-content') || 
+                            document.querySelector('.main-content');
+        
+        // Add tooltips to nav links
+        const navLinks = sidebar.querySelectorAll('.nav-link, .logout-button');
+        navLinks.forEach(link => {
+            const span = link.querySelector('span');
+            if (span) {
+                link.setAttribute('data-tooltip', span.textContent);
+            }
+        });
+        
+        function handleSidebarToggle(event) {
+            // Prevent default if it's a link
+            if (event) {
+                event.preventDefault();
+            }
+            
+            // For mobile screens
+            if (window.innerWidth < 992) {
+                sidebar.classList.toggle('show');
+                const overlay = document.getElementById('sidebar-overlay');
+                if (overlay) {
+                    overlay.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
+                }
+            } 
+            // For desktop screens
+            else {
+                // Toggle collapsed class on sidebar
+                sidebar.classList.toggle('collapsed');
+                
+                // Check if we have main content element
+                if (mainContent) {
+                    mainContent.classList.toggle('expanded');
+                }
+                
+                // Check if we have topbar element
+                if (topbar) {
+                    topbar.classList.toggle('expanded');
+                }
+                
+                // Save state to localStorage
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            }
+            
+            // Log for debugging
+            console.log('Sidebar toggle clicked. Collapsed:', sidebar.classList.contains('collapsed'));
+        }
+        
+        // Add click event listener to sidebar toggle
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', handleSidebarToggle);
+            console.log('Sidebar toggle event listener added');
+        } else {
+            console.warn('Sidebar toggle button not found');
+        }
+        
+        // Create mobile overlay
+        function createMobileOverlay() {
+            if (!document.getElementById('sidebar-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'sidebar-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                overlay.style.zIndex = '999';
+                overlay.style.display = 'none';
+                document.body.appendChild(overlay);
+                
+                overlay.addEventListener('click', function() {
+                    sidebar.classList.remove('show');
+                    overlay.style.display = 'none';
+                });
+            }
+        }
+        
+        // Handle responsive behavior
+        function handleResponsiveness() {
+            if (window.innerWidth < 992) {
+                // Create overlay for mobile if it doesn't exist
+                createMobileOverlay();
+                
+                // If not already in collapsed state for mobile
+                if (!sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.add('collapsed');
+                    if (mainContent) mainContent.classList.add('expanded');
+                    if (topbar) topbar.classList.add('expanded');
+                }
+            }
+        }
+        
+        // Check for saved state (only apply on desktop)
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true' && window.innerWidth >= 992) {
+            sidebar.classList.add('collapsed');
+            if (mainContent) mainContent.classList.add('expanded');
+            if (topbar) topbar.classList.add('expanded');
+        }
+        
+        // Initial responsive check
+        handleResponsiveness();
+        
+        // Recheck on window resize
+        window.addEventListener('resize', handleResponsiveness);
+    });
+</script>
